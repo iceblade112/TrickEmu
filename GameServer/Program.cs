@@ -15,7 +15,6 @@ namespace TrickEmu
         private static readonly List<Socket> _clientSockets = new List<Socket>();
         private const int _BUFFER_SIZE = 2048;
         private static readonly byte[] _buffer = new byte[_BUFFER_SIZE];
-        private static int _PORT = 22006;
 
         // GameServer specifics
         private static int sitstate = 0; // TO-DO: Player class
@@ -27,10 +26,10 @@ namespace TrickEmu
             try
             {
                 _serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                _serverSocket.Bind(new IPEndPoint(IPAddress.Any, _PORT));
+                _serverSocket.Bind(new IPEndPoint(IPAddress.Any, Config.gamePort));
                 _serverSocket.Listen(5);
                 _serverSocket.BeginAccept(AcceptCallback, null);
-                Methods.echoColor("Socket System", ConsoleColor.DarkGreen, "Server has been started on port {0}.", new string[] { _PORT.ToString() });
+                Methods.echoColor("Socket System", ConsoleColor.DarkGreen, "Server has been started on port {0}.", new string[] { Config.gamePort.ToString() });
             }
             catch (Exception ex)
             {
