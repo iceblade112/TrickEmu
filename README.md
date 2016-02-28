@@ -1,5 +1,5 @@
 # TrickEmu
-TrickEmu is a WIP emulator for Trickster Online 0.50 licensed under GPLv3.
+TrickEmu is a WIP emulator for Trickster Online 0.50 licensed under GPLv3. Any complaints about the license go to [@PyroSamurai](https://github.com/PyroSamurai).
 
 The "TEMethods" project is not ready for release yet, but it *should* be added in the future. For now, it is easily recreatable.
 
