@@ -6,8 +6,7 @@ The "TEMethods" project is not ready for release yet, but it *should* be added i
 ### TO-DO
 Pretty much everything except for the finished stuff. The list includes:
 * Better networking
-* A database (MySQL)
-* Real accounts
+* Actual character selection data
 * Character creation
 * Character deletion
 * Character movement
