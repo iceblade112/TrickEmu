@@ -5,7 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
-
+using System.IO;
+using MySql.Data.MySqlClient;
 
 namespace TrickEmu
 {
@@ -16,24 +17,148 @@ namespace TrickEmu
         private const int _BUFFER_SIZE = 2048;
         private static readonly byte[] _buffer = new byte[_BUFFER_SIZE];
 
+        private static string _SLang = "en";
+        private static string _MySQLUser = "root";
+        private static string _MySQLPass = "root";
+        private static string _MySQLHost = "127.0.0.1";
+        private static string _MySQLPort = "3306";
+        private static string _MySQLDB = "trickemu";
+        private static MySqlConnection _MySQLConn;
+
         // GameServer specifics
         private static int sitstate = 0; // TO-DO: Player class
 
         static void Main(string[] args)
         {
+            new Language(); // Initialize default language strings
             Console.Title = "TrickEmu Game (0.50)";
-            Methods.echoColor("Socket System", ConsoleColor.DarkGreen, "Starting server...");
+
+            if (!File.Exists("TESettings.ini"))
+            {
+                Methods.echoColor(Language.strings["General"], ConsoleColor.DarkCyan, Language.strings["ConfigNotExist"]);
+                try
+                {
+                    var inifile = File.Create("TESettings.ini");
+                    inifile.Close();
+                    var ini = new ConfigReader("TESettings.ini");
+                    ini.Write("Language", "en", Language.strings["General"]);
+                    ini.Write("User", "root", "MySQL");
+                    ini.Write("Pass", "root", "MySQL");
+                    ini.Write("Host", "127.0.0.1", "MySQL");
+                    ini.Write("Port", "3306", "MySQL");
+                    ini.Write("DB", "trickemu", "MySQL");
+                }
+                catch (Exception ex)
+                {
+                    Methods.echoColor(Language.strings["General"], ConsoleColor.DarkCyan, Language.strings["ConfigErrorUseDefault"]);
+                    Console.WriteLine(ex.ToString());
+                }
+            }
+            else
+            {
+                try
+                {
+                    var inifile = new ConfigReader("TESettings.ini");
+
+                    if (!inifile.KeyExists("Language", "General"))
+                    {
+                        inifile.Write("Language", "en", "General");
+                    }
+                    else
+                    {
+                        _SLang = inifile.Read("Language", "General");
+                    }
+
+                    if (!inifile.KeyExists("User", "MySQL"))
+                    {
+                        inifile.Write("User", "root", "MySQL");
+                    }
+                    else
+                    {
+                        _MySQLUser = inifile.Read("User", "MySQL");
+                    }
+
+                    if (!inifile.KeyExists("Pass", "MySQL"))
+                    {
+                        inifile.Write("Pass", "root", "MySQL");
+                    }
+                    else
+                    {
+                        _MySQLPass = inifile.Read("Pass", "MySQL");
+                    }
+
+                    if (!inifile.KeyExists("Host", "MySQL"))
+                    {
+                        inifile.Write("Host", "127.0.0.1", "MySQL");
+                    }
+                    else
+                    {
+                        _MySQLHost = inifile.Read("Host", "MySQL");
+                    }
+
+                    if (!inifile.KeyExists("Port", "MySQL"))
+                    {
+                        inifile.Write("User", "3306", "MySQL");
+                    }
+                    else
+                    {
+                        _MySQLPort = inifile.Read("Port", "MySQL");
+                    }
+
+                    if (!inifile.KeyExists("DB", "MySQL"))
+                    {
+                        inifile.Write("DB", "trickemu", "MySQL");
+                    }
+                    else
+                    {
+                        _MySQLDB = inifile.Read("DB", "MySQL");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Methods.echoColor(Language.strings["General"], ConsoleColor.DarkCyan, Language.strings["ConfigErrorUseDefault"]);
+                    Console.WriteLine(ex);
+                }
+
+                // Language
+                if (_SLang != "en")
+                {
+                    try {
+                        Language.loadFromFile(_SLang);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine("Could not load language: " + ex);
+                    }
+                }
+
+                // MySQL
+                _MySQLConn = new MySqlConnection("server=" + _MySQLHost + ";port=" + _MySQLPort + ";database=" + _MySQLDB + ";uid=" + _MySQLUser + ";pwd=" + _MySQLPass + ";");
+                try
+                {
+                    _MySQLConn.Open();
+                }
+                catch (Exception ex)
+                {
+                    Methods.echoColor(Language.strings["General"], ConsoleColor.DarkCyan, Language.strings["MySQLConnectError"]);
+                    Console.WriteLine(ex);
+                    Console.ReadKey();
+                    Environment.Exit(1); // Exit with error code 1 because error
+                }
+            }
+            
+            Methods.echoColor(Language.strings["SocketSys"], ConsoleColor.DarkGreen, Language.strings["StartingServer"]);
             try
             {
                 _serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 _serverSocket.Bind(new IPEndPoint(IPAddress.Any, Config.gamePort));
                 _serverSocket.Listen(5);
                 _serverSocket.BeginAccept(AcceptCallback, null);
-                Methods.echoColor("Socket System", ConsoleColor.DarkGreen, "Server has been started on port {0}.", new string[] { Config.gamePort.ToString() });
+                Methods.echoColor(Language.strings["SocketSys"], ConsoleColor.DarkGreen, Language.strings["StartedServer"], new string[] { Config.channelPort.ToString() });
             }
             catch (Exception ex)
             {
-                Console.WriteLine("An error occurred while starting the server: " + ex);
+                Console.WriteLine(Language.strings["ErrorStartServer"] + ex);
             }
             while (true) Console.ReadLine();
         }
@@ -64,7 +189,7 @@ namespace TrickEmu
 
             _clientSockets.Add(socket);
             socket.BeginReceive(_buffer, 0, _BUFFER_SIZE, SocketFlags.None, ReceiveCallback, socket);
-            Methods.echoColor("Socket System", ConsoleColor.DarkGreen, "Client accepted from " + socket.RemoteEndPoint + ".");
+            Methods.echoColor(Language.strings["SocketSys"], ConsoleColor.DarkGreen, Language.strings["ClientAccepted"], new string[] { socket.RemoteEndPoint.ToString() });
             _serverSocket.BeginAccept(AcceptCallback, null);
         }
 
@@ -79,7 +204,7 @@ namespace TrickEmu
             }
             catch (SocketException)
             {
-                Methods.echoColor("Socket System", ConsoleColor.DarkGreen, "Client " + current.RemoteEndPoint + " disconnected forcefully.");
+                Methods.echoColor(Language.strings["SocketSys"], ConsoleColor.DarkGreen, Language.strings["ForcefulDisconnect"], new string[] { current.RemoteEndPoint.ToString() });
                 current.Close();
                 _clientSockets.Remove(current);
                 return;
@@ -169,7 +294,7 @@ namespace TrickEmu
 
                 current.Send(newpkt);
 
-                Methods.echoColor("Packet Handler", ConsoleColor.Green, "Received chat packet: " + chatString);
+                Methods.echoColor(Language.strings["PacketHandler"], ConsoleColor.Green, "Received chat packet: " + chatString);
             }
             else if (bytes[0] == 0x09 && bytes[1] == 0x00)
             {
@@ -197,7 +322,7 @@ namespace TrickEmu
 
                 stream.Write(msg, 0, msg.Length);
 
-                echoColor("Packet Handler", ConsoleColor.Green);
+                echoColor(Language.strings["PacketHandler"], ConsoleColor.Green);
                 Console.WriteLine("Moving packet sent " + bytes[0] + " " + bytes[1]);
             }*/
             else if (bytes[4] == 0x40 && bytes[5] == 0x00)
@@ -220,11 +345,11 @@ namespace TrickEmu
 
                 sitstate++;
 
-                Methods.echoColor("Packet Handler", ConsoleColor.Green, "Sit packet sent. State " + sitstate);
+                Methods.echoColor(Language.strings["PacketHandler"], ConsoleColor.Green, "Sit packet sent. State " + sitstate);
             }
             else
             {
-                Methods.echoColor("Packet Handler", ConsoleColor.Green, "Unhandled packet received");
+                Methods.echoColor(Language.strings["PacketHandler"], ConsoleColor.Green, Language.strings["UnhandledPacket"]);
             }
 
             return;
