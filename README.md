@@ -4,7 +4,7 @@ TrickEmu is a WIP emulator for Trickster Online 0.50 coded in C# and licensed un
 The "TEMethods" project is not ready for release yet, but it *should* be added in the future. For now, it is easily recreatable.
 
 ### Requirements
-
+* MySQL, MariaDB, or some other drop-in MySQL replacement
 * MySQL Connector for .NET
 * Xamarin Studio/MonoDevelop (with modifications) or Microsoft Visual Studio 2015
 
@@ -22,7 +22,7 @@ Pretty much everything except for the finished stuff. The list includes:
 ### Finished but not working
 * Chat box above the player's head
 * Sitting (semi-finished)
-* "Personal notice" (that's what the Chinese translates to! I forgot what it is in English.
+* "Personal notice" (that's what the Chinese translates to! I forgot what it is in English.)
 
 ### Finished
 * Capturing basic login packets
