@@ -25,10 +25,10 @@ namespace TrickEmu
             switch ((PacketId)Methods.ReadUshort(packet, 4))
             {
                 case PacketId.R_REQCHARSEL1:
-                    PacketWriter.ReqCharSelect1(dec, sock);
+                    PacketWriter.ReqCharSelect(dec, sock);
                     break;
                 case PacketId.R_REQCHARSEL2:
-                    PacketWriter.ReqCharSelect2(dec, sock);
+                    PacketWriter.SelectCharIngame(dec, sock);
                     break;
                 case PacketId.R_ALIVEPING:
                     break;

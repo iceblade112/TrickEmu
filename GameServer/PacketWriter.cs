@@ -32,6 +32,24 @@ namespace TrickEmu
             sock.Send(msg3);
         }
 
+        public static void HeadNotice(byte[] dec, Socket sock)
+        {
+            // Head notice (personal notice)
+            PacketBuffer header = new PacketBuffer();
+            header.WriteHexString("B6 00 00 00 01"); // Packet header
+
+            PacketBuffer data = new PacketBuffer();
+            data.WriteByte(0x94);
+            data.WriteByte(0x1B);
+            data.WriteString(Methods.sep(Methods.getString(dec, 9), "\x00"));
+            data.WriteByte(0x00);
+
+            Console.WriteLine("Head notice text: " + Methods.sep(Methods.getString(dec, 9), "\x00"));
+            byte[] newpkt = Encryption.encrypt(header.getPacket(), data.getPacket());
+
+            sock.Send(newpkt);
+        }
+
         public static void Chat(byte[] dec, Socket sock)
         {
             // Chat
