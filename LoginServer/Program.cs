@@ -23,7 +23,7 @@ namespace TrickEmu
         private static string _MySQLHost = "127.0.0.1";
         private static string _MySQLPort = "3306";
         private static string _MySQLDB = "trickemu";
-        private static MySqlConnection _MySQLConn;
+        public static MySqlConnection _MySQLConn;
 
         static void Main(string[] args)
         {
@@ -214,75 +214,13 @@ namespace TrickEmu
 
             if (received != 0)
             {
-                handlePacket(recBuf, current);
+                PacketReader.handlePacket(recBuf, current);
             } else
             {
                 return;
             }
             
             current.BeginReceive(_buffer, 0, _BUFFER_SIZE, SocketFlags.None, ReceiveCallback, current);
-            return;
-        }
-
-        public static void handlePacket(byte[] bytes, Socket current)
-        {
-            int i = bytes.Length;
-
-            byte[] dec = Encryption.decrypt(bytes);
-
-            if (bytes[4] == 0xED && bytes[5] == 0x2C)
-            {
-                // Login request
-
-                // Invalid password (60001):
-                //byte[] msg = new byte[] { 0x0D, 0x00, 0x00, 0x00, 0xEF, 0x2C, 0x00, 0x00, 0x00, 0x63, 0xEA, 0x00, 0x00 };
-
-                byte[] msg = new byte[] { };
-                
-                string uid = Methods.getString(dec, i).Substring(0, 12);
-                string upw = Methods.getString(dec, i).Substring(19);
-
-                try {
-                    using (MySqlCommand cmd = _MySQLConn.CreateCommand())
-                    {
-                        cmd.CommandText = "SELECT COUNT(*) FROM users WHERE username = @userid AND password = @userpw;";
-                        cmd.Parameters.AddWithValue("@userid", Methods.cleanString(uid));
-                        cmd.Parameters.AddWithValue("@userpw", Methods.cleanString(upw));
-                        if (Convert.ToInt32(cmd.ExecuteScalar()) >= 1)
-                        {
-                            msg = new byte[] { 0x5F, 0x00, 0x00, 0x00, 0xEE, 0x2C, 0x00, 0x00, 0x00, 0x0B, 0xE1, 0xF5, 0x05, 0x65, 0x04, 0x60, 0x93, 0x3D, 0x8C, 0xF5, 0x0F, 0x01, 0x01, 0x01, 0x00, 0x53, 0x68, 0x61, 0x6E, 0x67, 0x68, 0x6F, 0x69, 0x00, 0xED, 0xCB, 0x01, 0x66, 0xC7, 0x53, 0x4E, 0x00, 0xD9, 0xC2, 0x00, 0xA8, 0xFB, 0xCB, 0x01, 0xAA, 0xDD, 0xC2, 0x00, 0x01, 0x00, 0x00, 0x00, 0x0C, 0x57, 0x4F, 0x52, 0x4C, 0x44, 0x31, 0x00, 0x00, 0xD9, 0xC2, 0x00, 0xA8, 0xFB, 0xCB, 0x01, 0xAA, 0xDD, 0xC2, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0xAC, 0x0D, 0x00, 0x00 };
-                            current.Send(msg);
-                        } else
-                        {
-                            msg = new byte[] { 0x0D, 0x00, 0x00, 0x00, 0xEF, 0x2C, 0x00, 0x00, 0x00, 0x63, 0xEA, 0x00, 0x00 };
-                            current.Send(msg);
-                        }
-                        cmd.Dispose();
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine("Database error: " + ex);
-                }
-
-                //Console.WriteLine("User ID: " + uid);
-                //Console.WriteLine("User PW: " + upw);
-
-                //Methods.echoColor("Packet Handler", ConsoleColor.Green, "Sent server select screen.");
-            }
-            else if (bytes[4] == 0xF1 && bytes[5] == 0x2C)
-            {
-                // Server log in (get IP)
-                // 127.0.0.1
-                byte[] msg = new byte[] { 0x1B, 0x00, 0x00, 0x00, 0xF2, 0x2C, 0x00, 0x00, 0x00, 0x31, 0x32, 0x37, 0x2E, 0x30, 0x2E, 0x30, 0x2E, 0x31, 0x00, 0x00, 0x00, 0x20, 0x01, 0x00, 0x00, 0x16, 0x27 };
-
-                current.Send(msg);
-            }
-            else
-            {
-                Methods.echoColor(Language.strings["PacketHandler"], ConsoleColor.Green, Language.strings["UnhandledPacket"]);
-            }
-
             return;
         }
     }
