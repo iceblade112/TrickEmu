@@ -1,7 +1,12 @@
 # TrickEmu
-TrickEmu is a WIP emulator for Trickster Online 0.50 licensed under AGPLv3. Any complaints about the license go to [@PyroSamurai](https://github.com/PyroSamurai).
+TrickEmu is a WIP emulator for Trickster Online 0.50 coded in C# and licensed under AGPLv3. TrickEmu compiles with Mono. Any complaints about the license go to [@PyroSamurai](https://github.com/PyroSamurai).
 
 The "TEMethods" project is not ready for release yet, but it *should* be added in the future. For now, it is easily recreatable.
+
+### Requirements
+
+* MySQL Connector for .NET
+* Xamarin Studio/MonoDevelop (with modifications) or Microsoft Visual Studio 2015
 
 ### TO-DO
 Pretty much everything except for the finished stuff. The list includes:
@@ -13,6 +18,11 @@ Pretty much everything except for the finished stuff. The list includes:
 * Character equipment
 * Character inventory
 * Character etc.
+
+### Finished but not working
+* Chat box above the player's head
+* Sitting (semi-finished)
+* "Personal notice" (that's what the Chinese translates to! I forgot what it is in English.
 
 ### Finished
 * Capturing basic login packets
