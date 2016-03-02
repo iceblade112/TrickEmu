@@ -15,6 +15,7 @@ namespace TrickEmu
             R_SELECTCHAR2 = 0x0900,
             R_CHAT = 0x3600,
             R_SIT = 0x4000,
+            R_NOTWORKINGMOVE = 0x1800,
             R_HEADNOTICE = 0xB600,
         }
 
@@ -23,6 +24,8 @@ namespace TrickEmu
             int i = packet.Length;
 
             byte[] dec = Encryption.decrypt(packet);
+
+            Console.WriteLine(Methods.ReadUshort(packet, 4).ToString("X"));
 
             switch ((PacketId)Methods.ReadUshort(packet, 4))
             {
@@ -34,6 +37,10 @@ namespace TrickEmu
                     break;
                 case PacketId.R_CHAT:
                     PacketWriter.Chat(dec, sock);
+                    break;
+                case PacketId.R_NOTWORKINGMOVE:
+                    Console.WriteLine("Sent notworkingmove.");
+                    PacketWriter.NotWorkingMove(dec, sock);
                     break;
                 case PacketId.R_SIT:
                     PacketWriter.Sit(dec, sock);

@@ -135,6 +135,18 @@ namespace TrickEmu
             Methods.echoColor(Language.strings["PacketHandler"], ConsoleColor.Green, "Received chat packet: " + chatString);
         }
 
+        public static void NotWorkingMove(byte[] dec, Socket sock)
+        {
+            PacketBuffer data = new PacketBuffer();
+            data.WriteHeaderHexString("18 00 00 00 01");
+            data.WriteByteArray(new byte[] { 0x98, 0x1B });
+            data.WriteByteArray(dec);
+
+            sock.Send(data.getPacket()); // Oops
+
+            Console.WriteLine("Sent non-working move packet");
+        }
+
         public static void Sit(byte[] dec, Socket sock)
         {
             // Header (SEND and RECV):

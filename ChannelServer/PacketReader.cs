@@ -12,8 +12,9 @@ namespace TrickEmu
         public enum PacketId : ushort
         {
             R_ALIVEPING = 0xDF07,
-            R_REQCHARSEL1 = 0xD007,
-            R_REQCHARSEL2 = 0xDC07,
+            R_REQCHARSEL = 0xD007,
+            R_NEWCHAR = 0xD607,
+            R_SELCHARIG = 0xDC07,
         }
 
         public static void handlePacket(byte[] packet, Socket sock)
@@ -24,11 +25,14 @@ namespace TrickEmu
 
             switch ((PacketId)Methods.ReadUshort(packet, 4))
             {
-                case PacketId.R_REQCHARSEL1:
+                case PacketId.R_REQCHARSEL:
                     PacketWriter.ReqCharSelect(dec, sock);
                     break;
-                case PacketId.R_REQCHARSEL2:
+                case PacketId.R_SELCHARIG:
                     PacketWriter.SelectCharIngame(dec, sock);
+                    break;
+                case PacketId.R_NEWCHAR:
+                    PacketWriter.CreateCharacter(dec, sock);
                     break;
                 case PacketId.R_ALIVEPING:
                     break;

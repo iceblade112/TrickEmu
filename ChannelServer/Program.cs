@@ -13,7 +13,9 @@ namespace TrickEmu
     class Program
     {
         private static Socket _serverSocket;
-        private static readonly List<Socket> _clientSockets = new List<Socket>();
+        public static readonly List<Socket> _clientSockets = new List<Socket>();
+        public static Dictionary<int, string> _clientSocketIdentifiers = new Dictionary<int, string>();
+
         private const int _BUFFER_SIZE = 2048;
         private static readonly byte[] _buffer = new byte[_BUFFER_SIZE];
 
@@ -23,7 +25,7 @@ namespace TrickEmu
         private static string _MySQLHost = "127.0.0.1";
         private static string _MySQLPort = "3306";
         private static string _MySQLDB = "trickemu";
-        private static MySqlConnection _MySQLConn;
+        public static MySqlConnection _MySQLConn;
 
         static void Main(string[] args)
         {
