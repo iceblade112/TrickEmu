@@ -40,7 +40,6 @@ namespace TrickEmu
                     Methods.echoColor(Language.strings["PacketHandler"], ConsoleColor.Green, Language.strings["UnhandledPacket"]);
                     break;
             }
-            
         }
     }
 }

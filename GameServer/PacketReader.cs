@@ -25,7 +25,9 @@ namespace TrickEmu
 
             byte[] dec = Encryption.decrypt(packet);
 
-            Console.WriteLine(Methods.ReadUshort(packet, 4).ToString("X"));
+            //Console.WriteLine(Methods.ReadUshort(packet, 4).ToString("X"));
+
+            Console.WriteLine("PACKET: " + BitConverter.ToString(dec));
 
             switch ((PacketId)Methods.ReadUshort(packet, 4))
             {
