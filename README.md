@@ -1,4 +1,6 @@
 # TrickEmu
+[![Build Status](https://travis-ci.org/iceblade112/TrickEmu.svg?branch=master)](https://travis-ci.org/iceblade112/TrickEmu)
+
 TrickEmu is a WIP emulator for Trickster Online 0.50 coded in C# and licensed under AGPLv3. TrickEmu compiles with Mono. Any complaints about the license go to [@PyroSamurai](https://github.com/PyroSamurai).
 
 The "TEMethods" project is not ready for release yet, but it *should* be added in the future. For now, it is easily recreatable.
