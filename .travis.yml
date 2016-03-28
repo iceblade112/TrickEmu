@@ -4,3 +4,13 @@ install:
   - nuget restore TrickEmu.sln
 script:
   - xbuild /p:Configuration=Release /p:TargetFrameworkVersion=v4.5 TrickEmu.sln
+before_deploy:
+  - zip release.zip
+deploy:
+  provider: releases
+    api_key:
+      secure: '$GITHUB_API_KEY'
+  file: 'release.zip'
+  skip_cleanup: true
+  on:
+    tags
