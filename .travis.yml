@@ -1,0 +1,4 @@
+language: csharp
+solution: TrickEmu.sln
+install:
+  - nuget restore TrickEmu.sln
