@@ -276,3 +276,13 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
+
+# GNU+Linux xbuild Outputs
+# ========================
+/bin/*
+!/bin/Debug/languages
+!/bin/Release/languages
+/TEMethods/bin
+
+# Custom
+/extra
