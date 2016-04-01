@@ -37,13 +37,14 @@ namespace TrickEmu
             {
                 if (File.Exists(AppDomain.CurrentDomain.BaseDirectory + "\\languages\\" + lang + ".ini"))
                 {
+                    Console.WriteLine("Loading language...");
                     var inifile = new ConfigReader(AppDomain.CurrentDomain.BaseDirectory + "\\languages\\" + lang + ".ini");
 
                     foreach (string key in strings.Keys.ToArray())
                     {
-                        if (inifile.KeyExists(key, "Strings"))
+                        if (inifile.KeyExists(key))
                         {
-                            strings[key] = inifile.Read(key, "Strings");
+                            strings[key] = inifile.Read(key);
                         }
                     }
                 }
