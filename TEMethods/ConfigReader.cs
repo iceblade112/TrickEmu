@@ -1,58 +1,72 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Runtime.InteropServices;
-using System.IO;
-using System.Reflection;
 
 namespace TrickEmu
 {
-    // Retrieved from
-    // http://stackoverflow.com/a/14906422/1908515
-    // "IniFile" class by Danny Beckett
+    /// <summary>
+    /// Fake INI reader.
+    /// Does not follow actual INI rules.
+    /// At least it works on Mono...
+    /// </summary>
     public class ConfigReader
     {
-        string Path;
-        string EXE = Assembly.GetExecutingAssembly().GetName().Name;
+        private string inipath = "TESettings.cfg";
+        private Dictionary<string, string> vals = new Dictionary<string, string>();
 
-        [DllImport("kernel32")]
-        static extern long WritePrivateProfileString(string Section, string Key, string Value, string FilePath);
-
-        [DllImport("kernel32")]
-        static extern int GetPrivateProfileString(string Section, string Key, string Default, StringBuilder RetVal, int Size, string FilePath);
-
-        public ConfigReader(string IniPath = null)
+        public ConfigReader(string path)
         {
-            Path = new FileInfo(IniPath ?? EXE + ".ini").FullName.ToString();
+            inipath = path;
+            try {
+                string cfgraw = File.ReadAllText(path);
+                string[] cfgspl = cfgraw.Split(new string[] { System.Environment.NewLine }, System.StringSplitOptions.RemoveEmptyEntries);
+                foreach(string s in cfgspl)
+                {
+                    if(s.StartsWith("#") || s.StartsWith("[") || s.EndsWith("]")) { continue; }
+                    if(!s.Contains("=")) { continue; }
+                    
+                    string[] val = s.Split('=');
+                    if(val.Length != 2) { continue; }
+                    vals[val[0].Trim()] = val[1].Trim();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Couldn't do something with the config: " + ex);
+            }
         }
 
-        public string Read(string Key, string Section = null)
+        public void Write(string key, string val)
         {
-            var RetVal = new StringBuilder(255);
-            GetPrivateProfileString(Section ?? EXE, Key, "", RetVal, 255, Path);
-            return RetVal.ToString();
+            vals[key] = val;
         }
 
-        public void Write(string Key, string Value, string Section = null)
+        public string Read(string key)
         {
-            WritePrivateProfileString(Section ?? EXE, Key, Value, Path);
+            return vals[key];
         }
 
-        public void DeleteKey(string Key, string Section = null)
+        public bool KeyExists(string key)
         {
-            Write(Key, null, Section ?? EXE);
+            if(vals.ContainsKey(key))
+            {
+                return true;
+            }
+            return false;
         }
 
-        public void DeleteSection(string Section = null)
+        public void Save()
         {
-            Write(null, null, Section ?? EXE);
-        }
-
-        public bool KeyExists(string Key, string Section = null)
-        {
-            return Read(Key, Section).Length > 0;
+            try { File.Delete(inipath); } catch { }
+            string final = "";
+            foreach (KeyValuePair<string, string> val in vals)
+            {
+                final += val.Key + "=" + val.Value + Environment.NewLine;
+            }
+            File.WriteAllText(inipath, final);
         }
     }
 }

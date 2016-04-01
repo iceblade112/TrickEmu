@@ -32,20 +32,21 @@ namespace TrickEmu
             new Language(); // Initialize default language strings
             Console.Title = "TrickEmu Game (0.50)";
 
-            if (!File.Exists("TESettings.ini"))
+            if (!File.Exists("TESettings.cfg"))
             {
                 Methods.echoColor(Language.strings["General"], ConsoleColor.DarkCyan, Language.strings["ConfigNotExist"]);
                 try
                 {
-                    var inifile = File.Create("TESettings.ini");
+                    var inifile = File.Create("TESettings.cfg");
                     inifile.Close();
-                    var ini = new ConfigReader("TESettings.ini");
-                    ini.Write("Language", "en", Language.strings["General"]);
-                    ini.Write("User", "root", "MySQL");
-                    ini.Write("Pass", "root", "MySQL");
-                    ini.Write("Host", "127.0.0.1", "MySQL");
-                    ini.Write("Port", "3306", "MySQL");
-                    ini.Write("DB", "trickemu", "MySQL");
+                    var ini = new ConfigReader("TESettings.cfg");
+                    ini.Write("Language", "en");
+                    ini.Write("User", "root");
+                    ini.Write("Pass", "root");
+                    ini.Write("Host", "127.0.0.1");
+                    ini.Write("Port", "3306");
+                    ini.Write("DB", "trickemu");
+                    ini.Save();
                 }
                 catch (Exception ex)
                 {
@@ -57,60 +58,60 @@ namespace TrickEmu
             {
                 try
                 {
-                    var inifile = new ConfigReader("TESettings.ini");
+                    var inifile = new ConfigReader("TESettings.cfg");
 
-                    if (!inifile.KeyExists("Language", "General"))
+                    if (!inifile.KeyExists("Language"))
                     {
-                        inifile.Write("Language", "en", "General");
+                        inifile.Write("Language", "en");
                     }
                     else
                     {
-                        _SLang = inifile.Read("Language", "General");
+                        _SLang = inifile.Read("Language");
                     }
 
-                    if (!inifile.KeyExists("User", "MySQL"))
+                    if (!inifile.KeyExists("User"))
                     {
-                        inifile.Write("User", "root", "MySQL");
+                        inifile.Write("User", "root");
                     }
                     else
                     {
-                        _MySQLUser = inifile.Read("User", "MySQL");
+                        _MySQLUser = inifile.Read("User");
                     }
 
-                    if (!inifile.KeyExists("Pass", "MySQL"))
+                    if (!inifile.KeyExists("Pass"))
                     {
-                        inifile.Write("Pass", "root", "MySQL");
+                        inifile.Write("Pass", "root");
                     }
                     else
                     {
-                        _MySQLPass = inifile.Read("Pass", "MySQL");
+                        _MySQLPass = inifile.Read("Pass");
                     }
 
-                    if (!inifile.KeyExists("Host", "MySQL"))
+                    if (!inifile.KeyExists("Host"))
                     {
-                        inifile.Write("Host", "127.0.0.1", "MySQL");
+                        inifile.Write("Host", "127.0.0.1");
                     }
                     else
                     {
-                        _MySQLHost = inifile.Read("Host", "MySQL");
+                        _MySQLHost = inifile.Read("Host");
                     }
 
-                    if (!inifile.KeyExists("Port", "MySQL"))
+                    if (!inifile.KeyExists("Port"))
                     {
-                        inifile.Write("User", "3306", "MySQL");
+                        inifile.Write("User", "3306");
                     }
                     else
                     {
-                        _MySQLPort = inifile.Read("Port", "MySQL");
+                        _MySQLPort = inifile.Read("Port");
                     }
 
-                    if (!inifile.KeyExists("DB", "MySQL"))
+                    if (!inifile.KeyExists("DB"))
                     {
-                        inifile.Write("DB", "trickemu", "MySQL");
+                        inifile.Write("DB", "trickemu");
                     }
                     else
                     {
-                        _MySQLDB = inifile.Read("DB", "MySQL");
+                        _MySQLDB = inifile.Read("DB");
                     }
                 }
                 catch (Exception ex)
