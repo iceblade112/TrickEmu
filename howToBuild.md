@@ -8,6 +8,4 @@ How to build TrickEmu using xbuild
 ```
 xbuild /p:Configuration=Release /p:TargetFrameworkVersion=v4.5 TrickEmu.sln
 ```
-4. You're done.
 
-Link back to ReadMe.md file: [README](README.MD)
