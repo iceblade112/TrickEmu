@@ -8,6 +8,6 @@ TrickEmu is a WIP emulator for Trickster Online 0.50 coded in C# and licensed un
 * MySQL Connector for .NET
 * Xamarin Studio/MonoDevelop (with modifications) or Microsoft Visual Studio 2015
 
-List of the to-be-done, almost-done, and finished tasks: [TO-DO List](TODO.MD)
+List of the to-be-done, almost-done, and finished tasks: [TO-DO List](TODO.md)
 
 Instructions for building TrickEmu via terminal: [How To Build w/ xbuild](howToBuild.md)
