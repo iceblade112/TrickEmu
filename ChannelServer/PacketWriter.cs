@@ -170,6 +170,8 @@ namespace TrickEmu
 
             data.WriteByte((byte)nochars); // No. chars
 
+            UInt32[] charids = new UInt32[16];
+
             try
             {
                 byte currcard = 0;
@@ -181,7 +183,9 @@ namespace TrickEmu
                     {
                         while (reader.Read())
                         {
-                            data.WriteHexString("D8 1D F6 05 00 00 00 00 0B E1 F5 05 00 00 00 00");
+                            data.WriteUInt32(reader.GetUInt32("id"));
+                            data.WriteHexString("00 00 00 00 0B E1 F5 05 00 00 00 00");
+                            //data.WriteHexString("D8 1D F6 05 00 00 00 00 0B E1 F5 05 00 00 00 00");
                             data.WriteByte(currcard); // Card position (0 index)
                             data.WriteString(reader.GetString("name"), 16); // 16 byte character name
                             data.WriteHexString("00 00 00 00 01 00 01 00 04 02 01 03 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00"); // ??
@@ -191,6 +195,8 @@ namespace TrickEmu
                             data.WriteUshort(reader.GetUInt16("health")); // HP
                             data.WriteUshort(reader.GetUInt16("mana")); // MP
                             data.WriteHexString("00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 F0 A0 E2 6A E4 73 D1 01 F0 A0 E2 6A E4 73 D1 01 00 00 00 00 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00");
+
+                            charids[currcard] = reader.GetUInt32("id");
 
                             currcard++;
                         }
@@ -210,10 +216,15 @@ namespace TrickEmu
             {
                 if (i == 0)
                 {
-                    data.WriteHexString("D8 1D F6 05 00 00 00 00 60 00 00 00 F4 1A 26 1B"); // Everything else, unknown
+                    data.WriteUInt32(charids[i]);
+                    data.WriteHexString("00 00 00 00 60 00 00 00 F4 1A 26 1B"); // Everything else, unknown
+                    //data.WriteHexString("D8 1D F6 05 00 00 00 00 60 00 00 00 F4 1A 26 1B"); // Everything else, unknown
                 }
-                else {
-                    data.WriteHexString("DB 1D F6 05 00 00 00 00 00 00 00 00"); // 2nd char data?
+                else
+                {
+                    data.WriteUInt32(charids[i]);
+                    data.WriteHexString("00 00 00 00 00 00 00 00"); // 2nd char data?
+                    //data.WriteHexString("DB 1D F6 05 00 00 00 00 00 00 00 00"); // 2nd char data?
                 }
             }
 
@@ -224,8 +235,19 @@ namespace TrickEmu
         public static void SelectCharIngame(byte[] dec, Socket sock)
         {
             // Char select (to go ingame)
-            byte[] msg = new byte[] { 0x2D, 0x00, 0x00, 0x00, 0xDE, 0x07, 0x00, 0x00, 0x00, 0xD8, 0x1D, 0xF6, 0x05, 0x00, 0x00, 0x00, 0x00, 0x0A, 0x00, 0x3C, 0x15, 0x00, 0x00, 0x31, 0x32, 0x37, 0x2E, 0x30, 0x2E, 0x30, 0x2E, 0x31, 0x00, 0xF6, 0x55, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x09, 0x00, 0x00, 0x00, 0x86, 0x15, 0x00, 0x00, 0x00 };
-            sock.Send(msg);
+            // Send character ID, IP of GS, etc
+
+            // Recv: [UInt32 ID] 00 00 00 00
+
+            PacketBuffer msg1 = new PacketBuffer();
+            msg1.WriteHeaderHexString("DE 07 00 00 00");
+            msg1.WriteByte(dec[0]);
+            msg1.WriteByte(dec[1]);
+            msg1.WriteByte(dec[2]);
+            msg1.WriteByte(dec[3]);
+            msg1.WriteHexString("00 00 00 00 0A 00 3C 15 00 00 31 32 37 2E 30 2E 30 2E 31 00 F6 55 00 00 00 00 00 00 00 00 00 00 09 00 00 00 86 15 00 00 00");
+
+            sock.Send(msg1.getPacketDecrypted());
             
             byte[] msg2 = new byte[] { 0x13, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0B, 0xE1, 0xF5, 0x05, 0x00, 0x00, 0x00, 0x00 };
             sock.Send(msg2);

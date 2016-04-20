@@ -16,6 +16,7 @@ namespace TrickEmu
         public static readonly List<Socket> _clientSockets = new List<Socket>();
         private const int _BUFFER_SIZE = 2048;
         private static readonly byte[] _buffer = new byte[_BUFFER_SIZE];
+        public static Dictionary<int, Player> _clientPlayers = new Dictionary<int, Player>();
 
         private static string _SLang = "en";
         private static string _MySQLUser = "root";
@@ -23,7 +24,7 @@ namespace TrickEmu
         private static string _MySQLHost = "127.0.0.1";
         private static string _MySQLPort = "3306";
         private static string _MySQLDB = "trickemu";
-        private static MySqlConnection _MySQLConn;
+        public static MySqlConnection _MySQLConn;
 
         // TO-DO: Player instance class
 

@@ -1,4 +1,4 @@
-using MySql.Data.MySqlClient;
+﻿using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +11,30 @@ namespace TrickEmu
     {
         public static void SelectChar1(byte[] dec, Socket sock)
         {
+            Player plr = new Player();
+            plr.ID = BitConverter.ToUInt32(new byte[] { dec[0], dec[1], dec[2], dec[3] }, 0); // ... soon
+
+            using (MySqlCommand cmd = Program._MySQLConn.CreateCommand())
+            {
+                cmd.CommandText = "SELECT name, level, money, health, mana FROM characters WHERE id = @userid LIMIT 1;";
+                cmd.Parameters.AddWithValue("@userid", plr.ID);
+                using (MySqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        plr.Name = reader.GetString("name");
+                        plr.Level = reader.GetInt32("level");
+                        plr.Money = reader.GetUInt32("money");
+                        plr.HP = reader.GetInt16("health");
+                        plr.MP = reader.GetInt16("mana");
+                    }
+                }
+                cmd.Dispose();
+            }
+            Methods.echoColor("Debug", ConsoleColor.DarkBlue, plr.Name + " is entering the world.");
+
+            Program._clientPlayers.Add(sock.GetHashCode(), plr);
+
             List<byte> msg = new List<byte>();
             // E6 00 00 00 01
             // Head
@@ -65,7 +89,7 @@ namespace TrickEmu
             PacketBuffer skillslot = new PacketBuffer();
             skillslot.WriteHeaderHexString("10 01 00 00 01");
             skillslot.WriteHexString("00 00 00 00 00 00");
-            
+
             msg.AddRange(head.getPacket());
             msg.AddRange(item.getPacket());
             msg.AddRange(stat.getPacket());
@@ -145,12 +169,14 @@ namespace TrickEmu
 
                 sock.Send(newpkt);
             }
-            else if(chatString.StartsWith("!oxc "))
+            else if (chatString.StartsWith("!oxc "))
             {
                 // Normal chat
                 PacketBuffer data = new PacketBuffer();
                 data.WriteHeaderByteArray(new byte[] { 0xB5, 0x00, 0x00, 0x00, 0x01 });
-                data.WriteByteArray(new byte[] { 0x94, 0x1B, 0x42, 0x6F, 0x62, 0x00 });
+                data.WriteByteArray(new byte[] { 0x94, 0x1B }); //, 0x42, 0x6F, 0x62, 0x00 });
+                data.WriteString(Program._clientPlayers[sock.GetHashCode()].Name);
+                data.WriteByte(0x00);
                 data.WriteString(Methods.sep(Methods.getString(dec, dec.Length), "\x00").Substring(5));
                 data.WriteByte(0x00);
 
@@ -177,7 +203,10 @@ namespace TrickEmu
                 // Normal chat
                 PacketBuffer data = new PacketBuffer();
                 data.WriteHeaderByteArray(new byte[] { 0x39, 0x00, 0x00, 0x00, 0x01 }); // Header (0x39 ID)
-                data.WriteByteArray(new byte[] { 0x94, 0x1B, 0x42, 0x6F, 0x62, 0x00 });
+                //data.WriteByteArray(new byte[] { 0x94, 0x1B, 0x42, 0x6F, 0x62, 0x00 });
+                data.WriteByteArray(new byte[] { 0x94, 0x1B });
+                data.WriteString(Program._clientPlayers[sock.GetHashCode()].Name);
+                data.WriteByte(0x00);
                 data.WriteString(Methods.sep(Methods.getString(dec, dec.Length), "\x00"));
                 data.WriteByte(0x00);
 
@@ -224,7 +253,7 @@ namespace TrickEmu
             PacketBuffer data = new PacketBuffer();
             data.WriteByteArray(new byte[] { 0x40, 0x00, 0x00, 0x01 });
             data.WriteByteArray(new byte[] { 0x98, 0x1B, 0x02 });
-            
+
             sock.Send(data.getPacket());
 
             Methods.echoColor(Language.strings["PacketHandler"], ConsoleColor.Green, "Sit packet sent.");
