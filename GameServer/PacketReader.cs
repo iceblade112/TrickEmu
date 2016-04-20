@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Sockets;
@@ -24,10 +24,6 @@ namespace TrickEmu
             int i = packet.Length;
 
             byte[] dec = Encryption.decrypt(packet);
-
-            //Console.WriteLine(Methods.ReadUshort(packet, 4).ToString("X"));
-
-            Console.WriteLine("PACKET: " + BitConverter.ToString(dec));
 
             switch ((PacketId)Methods.ReadUshort(packet, 4))
             {
