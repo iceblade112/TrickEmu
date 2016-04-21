@@ -17,6 +17,8 @@ namespace TrickEmu
         private const int _BUFFER_SIZE = 2048;
         private static readonly byte[] _buffer = new byte[_BUFFER_SIZE];
         public static Dictionary<int, Player> _clientPlayers = new Dictionary<int, Player>();
+        public static Dictionary<int, ushort> _entityIDs = new Dictionary<int, ushort>();
+        public static int _entityIdx = 7060;
 
         private static string _SLang = "en";
         private static string _MySQLUser = "root";
