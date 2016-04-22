@@ -1,4 +1,4 @@
-﻿using MySql.Data.MySqlClient;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -98,57 +98,8 @@ namespace TrickEmu
             Console.WriteLine("User PW: " + Config.encoding.GetString(udetail[1]));
             Console.WriteLine("Client Version: " + Config.encoding.GetString(udetail[2]));
 
-            /*PacketBuffer data = new PacketBuffer();
-            data.WriteHeaderHexString("D2 07 00 00 01");
-            data.WriteByte(1); // Amount of characters
-            data.WriteHexString("D8 1D F6 05 00 00 00 00 0B E1 F5 05 00 00 00 00 00"); // Unknown
-            data.WriteString("Test", 16); // 16 byte character name
-            data.WriteHexString("00 00 00 00 01 00 01 00 04 02 01 03 9C 01 9C 01 98 01 CC 00 CC 00 CC 00 66 00 66 00 66 00 32 01 32 01 32 01 90 01 00 00 00 00 00 00 00 00"); // Unknown
-            data.WriteByte(5); // 1 byte (int) level
-            data.WriteHexString("00 00 00 21 00 B1 0D 00 00 D4 0A 00 00 21 00"); // Unknown
-            data.WriteUInt32(290); // galders, 4 bytes (uint32)
-            // TO-DO: Normal short write
-            data.WriteHexString("60 09"); // Current HP
-            data.WriteHexString("4A 06"); // Current MP
-            data.WriteHexString("14 00 00 00 00 00 00 00 04 00 00 00 06 00 00 00 D7 A7 E9 01 40 31 8C E3 79 72 D1 01 40 31 8C E3 79 72 D1 01 65 35 00 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ED D1 8C 77 00 00 00 00 EE D1 8C 77 00 00 00 00 EC D1 8C 77 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00");
-
-            //data.WriteHexString("DB 1D F6 05 00 00 00 00 0B E1 F5 05 00 00 00 00 01 43 68 61 72 32 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 01 00 01 00 04 02 01 03 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 21 00 00 00 00 00 00 00 00 00 21 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 F0 A0 E2 6A E4 73 D1 01 F0 A0 E2 6A E4 73 D1 01 00 00 00 00 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00"); // Second character
-
-            data.WriteByte(1); // Amount of characters again?
-            data.WriteHexString("D8 1D F6 05 00 00 00 00 60 00 00 00 F4 1A 26 1B"); // Everything else, unknown
-            */
-
             PacketBuffer data = new PacketBuffer();
             data.WriteHeaderHexString("D2 07 00 00 01");
-            /*data.WriteByte(2); // Amount of characters
-            data.WriteHexString("D8 1D F6 05 00 00 00 00 0B E1 F5 05 00 00 00 00"); // Unknown
-            data.WriteByte(0x00); // Card position (0 index)
-            data.WriteString("Test", 16); // 16 byte character name
-            data.WriteHexString("00 00 00 00 01 00 01 00 04 02 01 03 9C 01 9C 01 98 01 CC 00 CC 00 CC 00 66 00 66 00 66 00 32 01 32 01 32 01 90 01 00 00 00 00 00 00 00 00"); // Unknown
-            data.WriteByte(5); // 1 byte (int) level
-            data.WriteHexString("00 00 00 21 00 B1 0D 00 00 D4 0A 00 00 21 00"); // Unknown
-            data.WriteUInt32(290); // galders, 4 bytes (uint32)
-            // TO-DO: Normal short write
-            data.WriteHexString("60 09"); // Current HP
-            data.WriteHexString("4A 06"); // Current MP
-            data.WriteHexString("14 00 00 00 00 00 00 00 04 00 00 00 06 00 00 00 D7 A7 E9 01 40 31 8C E3 79 72 D1 01 40 31 8C E3 79 72 D1 01 65 35 00 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 ED D1 8C 77 00 00 00 00 EE D1 8C 77 00 00 00 00 EC D1 8C 77 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00");
-
-            // 2nd char
-            data.WriteHexString("DB 1D F6 05 00 00 00 00 0B E1 F5 05 00 00 00 00");
-            data.WriteByte(0x01); // Card position (0 index)
-            data.WriteString("Test2", 16); // 16 byte character name
-            data.WriteHexString("00 00 00 00 01 00 01 00 04 02 01 03 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00"); // ??
-            data.WriteByte(16); // Level
-            data.WriteHexString("00 00 00 21 00 00 00 00 00 00 00 00 00 21 00");
-            data.WriteUInt32(29999); // Current galders
-            data.WriteUshort(50); // HP
-            data.WriteUshort(50); // MP
-            data.WriteHexString("00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 F0 A0 E2 6A E4 73 D1 01 F0 A0 E2 6A E4 73 D1 01 00 00 00 00 02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00");
-
-            data.WriteByte(2); // Amount of characters again?
-            data.WriteHexString("D8 1D F6 05 00 00 00 00 60 00 00 00 F4 1A 26 1B"); // Everything else, unknown
-
-            data.WriteHexString("DB 1D F6 05 00 00 00 00 00 00 00 00"); // 2nd char data?*/
 
             int nochars = 0;
 
@@ -177,14 +128,16 @@ namespace TrickEmu
                 byte currcard = 0;
                 using (MySqlCommand cmd = Program._MySQLConn.CreateCommand())
                 {
-                    cmd.CommandText = "SELECT * FROM characters WHERE user = @userid LIMIT 3;";
+                    cmd.CommandText = "SELECT characters.*, users.id AS ownerid FROM characters INNER JOIN users ON characters.user = users.username WHERE user = @userid LIMIT 3;";
                     cmd.Parameters.AddWithValue("@userid", Methods.cleanString(uid));
                     using (MySqlDataReader reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
                         {
                             data.WriteUInt32(reader.GetUInt32("id"));
-                            data.WriteHexString("00 00 00 00 0B E1 F5 05 00 00 00 00");
+	                        data.WriteHexString("00 00 00 00");
+	                        data.WriteUInt32(reader.GetUInt32("ownerid"));
+	                        data.WriteHexString("00 00 00 00");
                             //data.WriteHexString("D8 1D F6 05 00 00 00 00 0B E1 F5 05 00 00 00 00");
                             data.WriteByte(currcard); // Card position (0 index)
                             data.WriteString(reader.GetString("name"), 16); // 16 byte character name
@@ -248,9 +201,31 @@ namespace TrickEmu
             msg1.WriteHexString("00 00 00 00 0A 00 3C 15 00 00 31 32 37 2E 30 2E 30 2E 31 00 F6 55 00 00 00 00 00 00 00 00 00 00 09 00 00 00 86 15 00 00 00");
 
             sock.Send(msg1.getPacketDecrypted());
-            
-            byte[] msg2 = new byte[] { 0x13, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0B, 0xE1, 0xF5, 0x05, 0x00, 0x00, 0x00, 0x00 };
-            sock.Send(msg2);
+
+	        UInt32 userId = 0;
+
+	        using (MySqlCommand cmd = Program._MySQLConn.CreateCommand())
+	        {
+		        cmd.CommandText = "SELECT characters.id, users.id AS ownerid FROM characters INNER JOIN users ON characters.user = users.username WHERE characters.id = @charid;";
+		        cmd.Parameters.AddWithValue("@charid", BitConverter.ToUInt32(new byte[] { dec[0], dec[1], dec[2], dec[3] }, 0));
+		        using (MySqlDataReader reader = cmd.ExecuteReader())
+		        {
+			        while (reader.Read())
+			        {
+				        userId = reader.GetUInt32("ownerid");
+			        }
+		        }
+
+	        }
+
+	        PacketBuffer msg2 = new PacketBuffer();
+	        msg2.WriteHeaderHexString("03 00 00 00 00");
+	        msg2.WriteHexString("00 00");
+	        msg2.WriteUInt32(userId);
+	        msg2.WriteHexString("00 00 00 00");
+
+	        //byte[] msg2 = new byte[] { 0x13, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0B, 0xE1, 0xF5, 0x05, 0x00, 0x00, 0x00, 0x00 };
+            sock.Send(msg2.getPacketDecrypted());
         }
     }
 }
