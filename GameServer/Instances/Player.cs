@@ -13,6 +13,9 @@ namespace TrickEmu
     /// </summary>
     class Player
     {
+	    // Player's socket
+    	public Socket ClientSocket { get; set; }
+
         // Character ID from DB
         // Set on create
         public uint ID { get; set; }

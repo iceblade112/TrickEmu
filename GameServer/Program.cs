@@ -199,17 +199,35 @@ namespace TrickEmu
         private static void ReceiveCallback(IAsyncResult AR)
         {
             Socket current = (Socket)AR.AsyncState;
+
             int received;
 
             try
             {
                 received = current.EndReceive(AR);
+
+				// Check if disconnected
+				if(!current.Connected || received == 0)
+				{
+					ProjectMethods.DisconnectPlayer(current);
+
+					Methods.echoColor(Language.strings["SocketSys"], ConsoleColor.DarkGreen, Language.strings["GracefulDisconnect"], new string[] { current.RemoteEndPoint.ToString() });
+					_entityIDs.Remove(current.GetHashCode());
+					_clientPlayers.Remove(current.GetHashCode());
+					_clientSockets.Remove(current);
+					current.Close();
+					return;
+				}
             }
             catch (SocketException)
             {
+	            ProjectMethods.DisconnectPlayer(current);
+
+	            _entityIDs.Remove(current.GetHashCode());
+				_clientPlayers.Remove(current.GetHashCode());
+				_clientSockets.Remove(current);
+				current.Close();
                 Methods.echoColor(Language.strings["SocketSys"], ConsoleColor.DarkGreen, Language.strings["ForcefulDisconnect"], new string[] { current.RemoteEndPoint.ToString() });
-                current.Close();
-                _clientSockets.Remove(current);
                 return;
             }
 

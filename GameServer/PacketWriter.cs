@@ -14,6 +14,7 @@ namespace TrickEmu
             Program._entityIdx++;
 
             Player plr = new Player();
+	        plr.ClientSocket = sock;
             plr.ID = BitConverter.ToUInt32(new byte[] { dec[0], dec[1], dec[2], dec[3] }, 0); // ... soon
             plr.EntityID = (ushort)Program._entityIdx;
 
@@ -121,9 +122,9 @@ namespace TrickEmu
         public static void SelectChar2(byte[] dec, Socket sock)
         {
             // ...why do we have to send this?
-            
-            byte[] msg = new byte[] { 0x2F, 0x00, 0x9C, 0xF3, 0x07, 0x00, 0x00, 0x00, 0x01, 0x9B, 0x84, 0x5B, 0xD0, 0x5B, 0xD0, 0x5B, 0xB7, 0xD0, 0x95, 0x9E, 0x99, 0x5A, 0x95, 0x9E, 0x99, 0x5A, 0x6C, 0x2E, 0x53, 0xD0, 0xD0, 0xD0, 0x5B, 0xD0, 0xD0, 0xD0, 0xD0, 0xD0, 0xD8, 0xD0, 0xD0, 0xD0, 0xE7, 0x45, 0xD6, 0x84, 0x5B, 0x09, 0x00, 0x9C, 0xF3, 0x35, 0x01, 0x00, 0x00, 0x00 };
-            sock.Send(msg);
+
+            //byte[] msg = new byte[] { 0x2F, 0x00, 0x9C, 0xF3, 0x07, 0x00, 0x00, 0x00, 0x01, 0x9B, 0x84, 0x5B, 0xD0, 0x5B, 0xD0, 0x5B, 0xB7, 0xD0, 0x95, 0x9E, 0x99, 0x5A, 0x95, 0x9E, 0x99, 0x5A, 0x6C, 0x2E, 0x53, 0xD0, 0xD0, 0xD0, 0x5B, 0xD0, 0xD0, 0xD0, 0xD0, 0xD0, 0xD8, 0xD0, 0xD0, 0xD0, 0xE7, 0x45, 0xD6, 0x84, 0x5B, 0x09, 0x00, 0x9C, 0xF3, 0x35, 0x01, 0x00, 0x00, 0x00 };
+            //sock.Send(msg);
 
             /*PacketBuffer msg = new PacketBuffer();
             msg.WriteHeaderHexString("07 00 00 00 01");
@@ -132,26 +133,45 @@ namespace TrickEmu
             msg.WriteHexString("95 1B 01 00 01 00 01 40 00 D8 04 E8 06 D8 04 E8 06 42 6F 62 00 00 00 01 00 00 00 00 00 60 00 00 00 F4 1A 26 1B 01 C8 EC 21 7F 4D 09 EC EC EC");
             sock.Send(msg.getPacket());*/
 
+          	/*List<byte> msg = new List<byte>();
+          	PacketBuffer msg01 = new PacketBuffer();
+	      msg01.WriteHeaderHexString("07 00 00 00 01");
+	      msg01.WriteHexString("95 1B 01 00 01 00 01 40 00 D8 04 E8 06 D8 04 E8 06 42 6F 62 00 00 00 01 00 00 00 00 00 60 00 00 00 41 A2 61 B0 1C 8E");
+	      msg.AddRange(msg01.getPacket());
+
+	      PacketBuffer msg02 = new PacketBuffer();
+	      msg02.WriteHeaderHexString("");*/
+
+
             // Created a 2nd character??
 
             Console.WriteLine("Entity ID " + Program._clientPlayers[sock.GetHashCode()].EntityID + " is entering");
-            PacketBuffer msg1 = new PacketBuffer();
-            msg1.WriteHeaderHexString("07 00 00 00 01");
-            //msg1.WriteHexString("95 1B");
-            msg1.WriteUshort(Program._clientPlayers[sock.GetHashCode()].EntityID);
-            msg1.WriteHexString("01 00 01 00 00 40 00");
-            msg1.WriteUshort(Program._clientPlayers[sock.GetHashCode()].PosX);
-            msg1.WriteUshort(Program._clientPlayers[sock.GetHashCode()].PosY);
-            msg1.WriteUshort(Program._clientPlayers[sock.GetHashCode()].PosX);
-            msg1.WriteUshort(Program._clientPlayers[sock.GetHashCode()].PosY);
-            msg1.WriteString(Program._clientPlayers[sock.GetHashCode()].Name);
-            msg1.WriteHexString("00 00 80 01 00 00 00 00 00 60 00 00 00 F4 1A 26 1B 00 EC 86 97 34 B7 BD 86 86 86");
 
+	      List<byte> msg1 = new List<byte>();
+
+            PacketBuffer msg01 = new PacketBuffer();
+            msg01.WriteHeaderHexString("07 00 00 00 01");
+            msg01.WriteUshort(Program._clientPlayers[sock.GetHashCode()].EntityID);
+            msg01.WriteHexString("01 00 01 00 00 40 00");
+            msg01.WriteUshort(Program._clientPlayers[sock.GetHashCode()].PosX);
+            msg01.WriteUshort(Program._clientPlayers[sock.GetHashCode()].PosY);
+            msg01.WriteUshort(Program._clientPlayers[sock.GetHashCode()].PosX);
+            msg01.WriteUshort(Program._clientPlayers[sock.GetHashCode()].PosY);
+            msg01.WriteString(Program._clientPlayers[sock.GetHashCode()].Name);
+            msg01.WriteHexString("00 00 80 01 00 00 00 00 00 60 00 00 00 F4 1A 26 1B 00");
+			msg1.AddRange(msg01.getPacket());
+			msg1.AddRange(new byte[] { 0x09, 0x00, 0xE2, 0x88, 0x35, 0x01, 0x00, 0x00, 0x00 });
+
+            sock.Send(msg1.ToArray());
+
+	      	// Get every player connected to the server
+	        // Send existing players to new client
             foreach (KeyValuePair<int, Player> entry in Program._clientPlayers)
             {
+	          	// If the player selected isn't the current player
                 if(entry.Key != sock.GetHashCode())
                 {
-                    Console.WriteLine("Sending entity ID " + entry.Value.EntityID);
+                    Console.WriteLine("Sending entity ID " + Program._clientPlayers[sock.GetHashCode()].EntityID + " to " + entry.Value.EntityID);
                     PacketBuffer msg2z = new PacketBuffer();
                     msg2z.WriteHeaderHexString("07 00 00 00 01");
                     //msg1.WriteHexString("95 1B");
@@ -168,9 +188,29 @@ namespace TrickEmu
                 }
             }
 
+			// At this point, existing players don't know about this new player.
+	      	// Get every player connected to the server
+	        // Send new player to existing
+            foreach (KeyValuePair<int, Player> entry in Program._clientPlayers)
+            {
+	          	// If the player selected isn't the current player
+                if(entry.Key != sock.GetHashCode())
+                {
+                    Console.WriteLine("Sending entity ID " + entry.Value.EntityID + " to " + Program._clientPlayers[sock.GetHashCode()].EntityID );
+                    PacketBuffer msg3z = new PacketBuffer();
+                    msg3z.WriteHeaderHexString("07 00 00 00 01");
+					msg3z.WriteUshort(Program._clientPlayers[sock.GetHashCode()].EntityID);
+					msg3z.WriteHexString("01 00 01 00 00 40 00");
+					msg3z.WriteUshort(Program._clientPlayers[sock.GetHashCode()].PosX);
+					msg3z.WriteUshort(Program._clientPlayers[sock.GetHashCode()].PosY);
+					msg3z.WriteUshort(Program._clientPlayers[sock.GetHashCode()].PosX);
+					msg3z.WriteUshort(Program._clientPlayers[sock.GetHashCode()].PosY);
+					msg3z.WriteString(Program._clientPlayers[sock.GetHashCode()].Name);
+                    msg3z.WriteHexString("00 00 80 01 00 00 00 00 00 60 00 00 00 F4 1A 26 1B 00");
 
-            // What is 94 1B? Entity ID?
-            sock.Send(msg1.getPacket());
+                    entry.Value.ClientSocket.Send(msg3z.getPacket());
+                }
+            }
 
             /*PacketBuffer msg1 = new PacketBuffer();
             msg1.WriteHeaderHexString("07 00 00 00 01");
@@ -338,7 +378,10 @@ namespace TrickEmu
 
             //sock.Send(data.getPacket()); // Oops
 
-            Console.WriteLine("Player moved");
+	        Program._clientPlayers[sock.GetHashCode()].PosX = BitConverter.ToUInt16(new byte[] { dec[4], dec[5] }, 0);
+	        Program._clientPlayers[sock.GetHashCode()].PosY = BitConverter.ToUInt16(new byte[] { dec[6], dec[7] }, 0);
+
+            Console.WriteLine("Entity ID " + Program._clientPlayers[sock.GetHashCode()].EntityID + " moved: " + Program._clientPlayers[sock.GetHashCode()].PosX + " / " + Program._clientPlayers[sock.GetHashCode()].PosY);
         }
 
         public static void Sit(byte[] dec, Socket sock)

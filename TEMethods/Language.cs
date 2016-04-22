@@ -27,7 +27,8 @@ namespace TrickEmu
             strings["StartedServer"] = "Server has been started on port {0}.";
             strings["ErrorStartServer"] = "An error occurred while starting the server: ";
             strings["UnhandledPacket"] = "Unhandled packet received";
-            strings["ForcefulDisconnect"] = "Client {0} disconnected forcefully.";
+	        strings["ForcefulDisconnect"] = "Client {0} disconnected forcefully.";
+            strings["GracefulDisconnect"] = "Client {0} disconnected.";
             strings["ClientAccepted"] = "Client accepted from {0}.";
         }
 
