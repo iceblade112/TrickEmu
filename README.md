@@ -1,7 +1,7 @@
 # TrickEmu
 [![Build Status](https://travis-ci.org/iceblade112/TrickEmu.svg?branch=master)](https://travis-ci.org/iceblade112/TrickEmu)
 
-TrickEmu is a WIP emulator for Trickster Online 0.50 coded in C# and licensed under AGPLv3. TrickEmu compiles with Mono. Any complaints about the license go to [@PyroSamurai](https://github.com/PyroSamurai).
+TrickEmu is a WIP emulator for Trickster Online 0.50 coded in C# and licensed under AGPLv3. TrickEmu compiles with Mono. Any complaints about the license go to [@PyroSamurai](https://github.com/PyroSamurai). EXE patches are available at [iceblade112/TrickClientPatches](https://github.com/iceblade112/TrickClientPatches).
 
 ### Requirements
 * MySQL, MariaDB, or some other drop-in MySQL replacement
