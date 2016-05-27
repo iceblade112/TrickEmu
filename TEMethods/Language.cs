@@ -30,6 +30,7 @@ namespace TrickEmu
 	        strings["ForcefulDisconnect"] = "Client {0} disconnected forcefully.";
             strings["GracefulDisconnect"] = "Client {0} disconnected.";
             strings["ClientAccepted"] = "Client accepted from {0}.";
+            strings["MalformedPacketError"] = "An error occurred while handling the packet. Perhaps a malformed packet?";
         }
 
         public static void loadFromFile(string lang)

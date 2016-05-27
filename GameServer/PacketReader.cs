@@ -19,6 +19,11 @@ namespace TrickEmu
             R_MOVEPOS = 0x1800,
             R_HEADNOTICE = 0xB600,
             R_CHANGEZONE = 0x9C00,
+
+            R_ITEM_EQUIP = 0x5100,
+            R_DRILL_BEGIN = 0x2C00,
+            R_DRILL_UNK1 = 0x3000,
+            R_DRILL_UNK2 = 0x3100,
         }
 
         public static void handlePacket(byte[] packet, Socket sock)
@@ -48,10 +53,24 @@ namespace TrickEmu
                     PacketWriter.HeadNotice(dec, sock);
                     break;
                 case PacketId.R_CHANGEZONE:
-                    PacketWriter.ChangeZoneTest(dec, sock);
+                    PacketWriter.ChangeZone(dec, sock);
                     break;
                 case PacketId.R_SITDIR:
                     PacketWriter.SitDirection(dec, sock);
+                    break;
+
+                case PacketId.R_ITEM_EQUIP:
+                    PacketWriter.ItemEquip(dec, sock);
+                    break;
+                case PacketId.R_DRILL_BEGIN:
+                    PacketWriter.DrillBegin(dec, sock);
+                    break;
+                case PacketId.R_DRILL_UNK1:
+                    // Not working
+                    PacketWriter.DrillUnk1(dec, sock);
+                    break;
+                case PacketId.R_DRILL_UNK2:
+                    Console.WriteLine("Got drill unknown 2 packet.");
                     break;
                 default:
                     Methods.echoColor(Language.strings["PacketHandler"], ConsoleColor.Green, Language.strings["UnhandledPacket"]);

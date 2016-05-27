@@ -48,6 +48,7 @@
   <ItemGroup>
     <Compile Include="Commands\Handler.cs" />
     <Compile Include="Instances\Player.cs" />
+    <Compile Include="Maps\MapDetails.cs" />
     <Compile Include="PacketReader.cs" />
     <Compile Include="PacketWriter.cs" />
     <Compile Include="Program.cs" />
@@ -55,7 +56,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="Commands\App.config" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\TEMethods\TEMethods.csproj">

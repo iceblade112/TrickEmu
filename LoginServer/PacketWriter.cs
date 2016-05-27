@@ -42,21 +42,11 @@ namespace TrickEmu
                         data.WriteHeaderHexString("EE 2C 00 00 00 0B");
                         //data.WriteHexString("E1 F5 05 A3 A4 C7 14 6E C3 53 0D"); // ?
                         data.WriteHexString("00 00 00 00 00 00 00 00 00 00 00");
-                        data.WriteByte(2); // Amount of channels??
+                        data.WriteByte(1); // Amount of channels??
                         data.WriteByte(1); // Maybe amount of worlds?
 
                         data.WriteByte(0x01); // World 1
                         data.WriteByte(0x00); // Padding
-                        data.WriteString("Shanghai", 32);
-                        data.WriteByte(0x00);
-                        data.WriteString("Channel name", 32);
-                        data.WriteByte(0x00);
-                        data.WriteHexString("AC 0D");
-                        data.WriteBytePad(0x00, 4);
-
-                        // World 2
-                        data.WriteByte(0x02);
-                        data.WriteByte(0x00);
                         data.WriteString("Shanghai", 32);
                         data.WriteByte(0x00);
                         data.WriteString("Channel name", 32);

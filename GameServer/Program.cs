@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
@@ -16,7 +17,7 @@ namespace TrickEmu
         public static readonly List<Socket> _clientSockets = new List<Socket>();
         private const int _BUFFER_SIZE = 2048;
         private static readonly byte[] _buffer = new byte[_BUFFER_SIZE];
-        public static Dictionary<int, Player> _clientPlayers = new Dictionary<int, Player>();
+		public static Dictionary<int, Player> _clientPlayers = new Dictionary<int, Player>();
         public static Dictionary<int, ushort> _entityIDs = new Dictionary<int, ushort>();
         public static int _entityIdx = 7060;
 
@@ -28,7 +29,7 @@ namespace TrickEmu
         private static string _MySQLDB = "trickemu";
         public static MySqlConnection _MySQLConn;
 
-        // TO-DO: Player instance class
+        public static MapDetails MapDetails = new MapDetails();
 
         static void Main(string[] args)
         {
@@ -163,8 +164,61 @@ namespace TrickEmu
             {
                 Console.WriteLine(Language.strings["ErrorStartServer"] + ex);
             }
+
+			new Timer(DisconnectTimer, null, 0, 1000);
+
             while (true) Console.ReadLine();
         }
+
+		private static void DisconnectTimer(Object o) {
+			List<int> disposedPlayers = new List<int>();
+
+			foreach (KeyValuePair<int, Player> entry in Program._clientPlayers)
+			{
+				bool disposed = false;
+				try {
+					if(entry.Value.ClientSocket.Connected) {
+						disposed = false;
+					}
+					if(entry.Value.ClientRemoved && !entry.Value.ChangingMap) {
+						disposed = true;
+					}
+				}
+				catch (ObjectDisposedException) {
+					disposed = true;
+				}
+
+				if (disposed == true) {
+					disposedPlayers.Add(entry.Key);
+				}
+			}
+
+
+			foreach (int key in disposedPlayers) {
+				foreach (KeyValuePair<int, Player> plr in Program._clientPlayers) {
+					if (plr.Key == key) {
+						continue;
+					}
+
+					try {
+						// Disconnected
+						PacketBuffer dcmsg = new PacketBuffer ();
+						dcmsg.WriteHeaderHexString ("06 00 00 00 01");
+						dcmsg.WriteUshort (Program._clientPlayers[key].EntityID);
+
+						plr.Value.ClientSocket.Send(dcmsg.getPacket());
+					} catch {
+						// ignored
+					}
+				}
+
+				Console.WriteLine("Removing disposed entity " + Program._clientPlayers[key].EntityID + ".");
+
+				Program._clientPlayers.Remove(key);
+			}
+
+			GC.Collect();
+		}
 
         private static void CloseAllSockets()
         {
@@ -213,7 +267,7 @@ namespace TrickEmu
 
 					Methods.echoColor(Language.strings["SocketSys"], ConsoleColor.DarkGreen, Language.strings["GracefulDisconnect"], new string[] { current.RemoteEndPoint.ToString() });
 					_entityIDs.Remove(current.GetHashCode());
-					_clientPlayers.Remove(current.GetHashCode());
+					//_clientPlayers.Remove(current.GetHashCode());
 					_clientSockets.Remove(current);
 					current.Close();
 					return;
@@ -236,7 +290,13 @@ namespace TrickEmu
 
             if (received != 0)
             {
-                PacketReader.handlePacket(recBuf, current);
+                try {
+                    PacketReader.handlePacket(recBuf, current);
+                }
+                catch (Exception ex)
+                {
+                    Methods.echoColor(Language.strings["SocketSys"], ConsoleColor.DarkGreen, Language.strings["MalformedPacketError"]);
+                }
             }
             else
             {

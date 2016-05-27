@@ -9,6 +9,8 @@ namespace TrickEmu
 	{
 		public static void DisconnectPlayer(Socket disconnecting)
 		{
+			Program._clientPlayers[disconnecting.GetHashCode()].ClientRemoved = true;
+
 			try
 			{
 				// Update char pos

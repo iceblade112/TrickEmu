@@ -1,4 +1,4 @@
-using MySql.Data.MySqlClient;
+﻿using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -226,6 +226,11 @@ namespace TrickEmu
 
 	        //byte[] msg2 = new byte[] { 0x13, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0B, 0xE1, 0xF5, 0x05, 0x00, 0x00, 0x00, 0x00 };
             sock.Send(msg2.getPacketDecrypted());
+
+            PacketBuffer sysserver = new PacketBuffer();
+            sysserver.WriteHeaderHexString("85 15 00 00 01");
+            sysserver.WriteHexString("E0 1D F6 05 00 00 00 00 31 32 37 2E 30 2E 30 2E 31 00 18 34 00 00 6C 3D 00 00");
+            sock.Send(sysserver.getPacket());
         }
     }
 }

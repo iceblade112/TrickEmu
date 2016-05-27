@@ -16,6 +16,12 @@ namespace TrickEmu
 	    // Player's socket
     	public Socket ClientSocket { get; set; }
 
+		// Was player disposed/removed?
+		public bool ClientRemoved { get; set; } = false;
+
+		// Is player changing maps?
+		public bool ChangingMap { get; set; } = false;
+
         // Character ID from DB
         // Set on create
         public uint ID { get; set; }
