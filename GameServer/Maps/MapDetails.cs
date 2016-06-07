@@ -9,7 +9,8 @@ namespace TrickEmu
     class MapDetails
     {
         public Dictionary<int, string> MapName = new Dictionary<int, string>();
-        
+        public Dictionary<int, Point> MapPos = new Dictionary<int, Point>();
+
         public MapDetails()
         {
             MapPos[1] = new Point { X = 200, Y = 3980 };
@@ -36,7 +37,6 @@ namespace TrickEmu
             // ...
             MapName[50] = "Unknown";
         }
-        public Dictionary<int, Point> MapPos = new Dictionary<int, Point>();
 
         public struct Point
         {

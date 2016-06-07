@@ -158,7 +158,7 @@ namespace TrickEmu
                 _serverSocket.Bind(new IPEndPoint(IPAddress.Any, Config.gamePort));
                 _serverSocket.Listen(5);
                 _serverSocket.BeginAccept(AcceptCallback, null);
-                logger.Info(Language.strings["StartedServer"], Config.channelPort.ToString());
+                logger.Info(Language.strings["StartedServer"], Config.gamePort.ToString());
             }
             catch (Exception ex)
             {
