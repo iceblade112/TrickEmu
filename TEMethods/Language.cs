@@ -28,6 +28,9 @@ namespace TrickEmu
             strings["GracefulDisconnect"] = "Client {0} disconnected.";
             strings["ClientAccepted"] = "Client accepted from {0}.";
             strings["MalformedPacketError"] = "An error occurred while handling the packet. Perhaps a malformed packet?";
+            strings["MOTDCreateError"] = "Unable to create the MOTD file (MOTD.txt).";
+            strings["MOTDLoadError"] = "Unable to load the MOTD file (MOTD.txt).";
+            strings["MOTDTEWelcome"] = "Welcome to TrickEmu!";
         }
 
         public static void loadFromFile(string lang)

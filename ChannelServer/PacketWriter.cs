@@ -85,11 +85,10 @@ namespace TrickEmu
 
             string uid = Config.encoding.GetString(udetail[0]);
 
-            if (Program._clientSocketIdentifiers.ContainsKey(sock.GetHashCode()))
+            if (!Program._clientSocketIdentifiers.ContainsKey(sock.GetHashCode()))
             {
-                Program._clientSocketIdentifiers.Remove(sock.GetHashCode());
+                Program._clientSocketIdentifiers.Add(sock.GetHashCode(), uid);
             }
-            Program._clientSocketIdentifiers.Add(sock.GetHashCode(), uid);
 
             Program.logger.Debug("User ID: {0}", uid);
             Program.logger.Debug("User PW: {0}", Config.encoding.GetString(udetail[1]));
@@ -195,7 +194,9 @@ namespace TrickEmu
             msg1.WriteByte(dec[1]);
             msg1.WriteByte(dec[2]);
             msg1.WriteByte(dec[3]);
-            msg1.WriteHexString("00 00 00 00 0A 00 3C 15 00 00 31 32 37 2E 30 2E 30 2E 31 00 F6 55 00 00 00 00 00 00 00 00 00 00 09 00 00 00 86 15 00 00 00");
+            msg1.WriteHexString("00 00 00 00 0A 00 3C 15 00 00");
+            msg1.WriteString(Program._GameIP);
+            msg1.WriteHexString("00 F6 55 00 00 00 00 00 00 00 00 00 00 09 00 00 00 86 15 00 00 00");
 
             sock.Send(msg1.getPacketDecrypted());
 

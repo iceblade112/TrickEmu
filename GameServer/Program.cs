@@ -24,6 +24,7 @@ namespace TrickEmu
         public static Dictionary<int, ushort> _entityIDs = new Dictionary<int, ushort>();
         public static int _entityIdx = 7060;
 
+        public static string _GameIP = "127.0.0.1";
         private static string _SLang = "en";
         private static string _MySQLUser = "root";
         private static string _MySQLPass = "root";
@@ -31,6 +32,7 @@ namespace TrickEmu
         private static string _MySQLPort = "3306";
         private static string _MySQLDB = "trickemu";
         public static MySqlConnection _MySQLConn;
+        public static string[] _MOTD;
 
         public static MapDetails MapDetails = new MapDetails();
 
@@ -53,6 +55,7 @@ namespace TrickEmu
                     ini.Write("Host", "127.0.0.1");
                     ini.Write("Port", "3306");
                     ini.Write("DB", "trickemu");
+                    ini.Write("GameIP", "127.0.0.1");
                     ini.Save();
                 }
                 catch (Exception ex)
@@ -119,6 +122,17 @@ namespace TrickEmu
                     {
                         _MySQLDB = inifile.Read("DB");
                     }
+
+                    if (!inifile.KeyExists("GameIP"))
+                    {
+                        inifile.Write("GameIP", "127.0.0.1");
+                    }
+                    else
+                    {
+                        _GameIP = inifile.Read("GameIP");
+                    }
+
+                    inifile.Save();
                 }
                 catch (Exception ex)
                 {
@@ -134,6 +148,31 @@ namespace TrickEmu
                     catch (Exception ex)
                     {
                         logger.Error(ex, "Could not load language: ");
+                    }
+                }
+
+                _MOTD = new string[] { Language.strings["MOTDTEWelcome"] };
+
+                // MOTD
+                if (!File.Exists("MOTD.txt"))
+                {
+                    try
+                    {
+                        File.WriteAllText("MOTD.txt", "Welcome to TrickEmu!");
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.Error(ex, Language.strings["MOTDCreateError"]);
+                    }
+                } else
+                {
+                    try
+                    {
+                        _MOTD = File.ReadAllText("MOTD.txt").Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
+                    }
+                    catch (Exception ex)
+                    {
+                        logger.Error(ex, Language.strings["MOTDLoadError"]);
                     }
                 }
             }
@@ -273,13 +312,14 @@ namespace TrickEmu
             }
             catch (SocketException)
             {
-	            ProjectMethods.DisconnectPlayer(current);
+                logger.Warn(Language.strings["ForcefulDisconnect"], current.RemoteEndPoint.ToString());
 
-	            _entityIDs.Remove(current.GetHashCode());
+                ProjectMethods.DisconnectPlayer(current);
+
+                _entityIDs.Remove(current.GetHashCode());
 				_clientPlayers.Remove(current.GetHashCode());
 				_clientSockets.Remove(current);
 				current.Close();
-                logger.Warn(Language.strings["ForcefulDisconnect"], current.RemoteEndPoint.ToString());
                 return;
             }
 

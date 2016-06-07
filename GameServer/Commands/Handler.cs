@@ -9,22 +9,6 @@ namespace TrickEmu.Commands
 {
     class Handler
     {
-        public static void SendChat(string chat, Socket sock)
-        {
-            PacketBuffer data = new PacketBuffer();
-            data.WriteHeaderUshort(0x13C); // Packet ID
-            data.WriteHeaderByteArray(new byte[] { 0x00, 0x00, 0x01 }); // Packet header padding
-            data.WriteByteArray(new byte[] { 0x00, 0x00 }); // ?
-            data.WriteString(chat);
-            data.WriteByteArray(new byte[] { 0x00, 0x00 });
-
-            try
-            {
-                sock.Send(data.getPacket());
-            }
-            catch { }
-        }
-
         public static bool Handle(string chat, Socket sock)
         {
             string[] param = chat.Trim().Split(' ');
@@ -62,7 +46,7 @@ namespace TrickEmu.Commands
 
                     if (param.Length < 2)
                     {
-                        SendChat("Usage: !move [Map ID]", sock);
+                        ProjectMethods.SendChat("Usage: !move [Map ID]", sock);
                         return true;
                     }
 
@@ -74,17 +58,39 @@ namespace TrickEmu.Commands
                     }
                     catch
                     {
-                        SendChat("Usage: !move [Map ID]", sock);
+                        ProjectMethods.SendChat("Usage: !move [Map ID]", sock);
                         return true;
                     }
 
                     try
                     {
-                        SendChat("Changing zone to " + Program.MapDetails.MapName[MapId] + ".", sock);
+                        ProjectMethods.SendChat("Changing zone to " + Program.MapDetails.MapName[MapId] + ".", sock);
                     }
                     catch
                     {
-                        SendChat("Changing zone to ID " + MapId + " without position data.", sock);
+                        ProjectMethods.SendChat("Changing zone to ID " + MapId + " without position data.", sock);
+                    }
+
+                    foreach (KeyValuePair<int, Player> entry in Program._clientPlayers)
+                    {
+                        if (entry.Key == sock.GetHashCode()) continue;
+                        // Map value hasn't been changed yet for the moving player.
+                        // But if the looped player isn't in the map, there's no need to broadcast this to them.
+                        if (entry.Value.Map != Program._clientPlayers[sock.GetHashCode()].Map) continue;
+
+                        try
+                        {
+                            // Disconnected
+                            PacketBuffer dcmsg = new PacketBuffer();
+                            dcmsg.WriteHeaderHexString("06 00 00 00 01");
+                            dcmsg.WriteUshort(Program._clientPlayers[sock.GetHashCode()].EntityID);
+
+                            entry.Value.ClientSocket.Send(dcmsg.getPacket());
+                        }
+                        catch
+                        {
+                            // ignored
+                        }
                     }
 
                     List<byte> move1 = new List<byte>();
@@ -112,57 +118,72 @@ namespace TrickEmu.Commands
                     pkt2.WriteHeaderHexString("9A 00 00 00 01");
                     pkt2.WriteHexString("F2 92 B3 00");
                     pkt2.WriteUInt32(Program._clientPlayers[sock.GetHashCode()].ID);
-                    pkt2.WriteHexString("00 00 00 00 31 32 37 2E 30 2E 30 2E 31 00 F6 55 00 00 23 48 00 00");
+                    pkt2.WriteHexString("00 00 00 00");
+                    pkt2.WriteString(Program._GameIP);
+                    pkt2.WriteHexString("00 F6 55 00 00 23 48 00 00");
                     pkt2.WriteByte((byte)MapId);
                     pkt2.WriteHexString("00");
 
+                    int PosX = 512;
+                    int PosY = 512;
+
+                    // X coordinate
                     if (param.Length > 2)
                     {
                         Program.logger.Debug("Length of param: {0}", param.Length);
                         try
                         {
                             pkt2.WriteUshort((ushort)int.Parse(param[2]));
+                            PosX = int.Parse(param[2]);
                         }
                         catch
                         {
-                            SendChat("Invalid X position given. Using default X 512.", sock);
-                            pkt2.WriteUshort((ushort)512);
+                            ProjectMethods.SendChat("Invalid X position given. Using default X 512.", sock);
+                            pkt2.WriteUshort((ushort)PosX);
                         }
                     }
                     else {
                         try
                         {
                             pkt2.WriteUshort((ushort)Program.MapDetails.MapPos[MapId].X); // X pos
+                            PosX = Program.MapDetails.MapPos[MapId].X;
                         }
                         catch
                         {
-                            pkt2.WriteUshort((ushort)512);
+                            pkt2.WriteUshort((ushort)PosX);
                         }
                     }
 
+                    // Y coordinate
                     if (param.Length > 3)
                     {
                         Program.logger.Debug("Length of param: {0}", param.Length);
                         try
                         {
                             pkt2.WriteUshort((ushort)int.Parse(param[3]));
+                            PosY = int.Parse(param[3]);
                         }
                         catch
                         {
-                            SendChat("Invalid Y position given. Using default Y 512.", sock);
-                            pkt2.WriteUshort((ushort)512);
+                            ProjectMethods.SendChat("Invalid Y position given. Using default Y 512.", sock);
+                            pkt2.WriteUshort((ushort)PosY);
                         }
                     }
                     else {
                         try
                         {
                             pkt2.WriteUshort((ushort)Program.MapDetails.MapPos[MapId].Y); // Y pos
+                            PosY = Program.MapDetails.MapPos[MapId].Y;
                         }
                         catch
                         {
-                            pkt2.WriteUshort((ushort)512);
+                            pkt2.WriteUshort((ushort)PosY);
                         }
                     }
+
+                    Program._clientPlayers[sock.GetHashCode()].Map = MapId;
+                    Program._clientPlayers[sock.GetHashCode()].PosX = (ushort)PosX;
+                    Program._clientPlayers[sock.GetHashCode()].PosY = (ushort)PosY;
 
                     pkt2.WriteHexString("02");
                     sock.Send(pkt2.getPacket());
