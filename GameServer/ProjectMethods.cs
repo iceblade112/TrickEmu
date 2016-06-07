@@ -27,7 +27,7 @@ namespace TrickEmu
 					cmd.ExecuteNonQuery();
 					cmd.Dispose();
 				}
-			} catch (Exception ex) { Console.WriteLine(ex); }
+			} catch (Exception ex) { Program.logger.Error(ex, "Character update error."); }
 
 			foreach (KeyValuePair<int, Player> entry in Program._clientPlayers)
 			{

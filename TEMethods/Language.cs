@@ -17,9 +17,6 @@ namespace TrickEmu
 
         public Language()
         {
-            strings["PacketHandler"] = "Packet Handler";
-            strings["SocketSys"] = "Socket System";
-            strings["General"] = "General";
             strings["ConfigNotExist"] = "Configuration file does not exist. Creating.";
             strings["ConfigErrorUseDefault"] = "An error occurred while creating the default configuration file. Defaults will be used.";
             strings["MySQLConnectError"] = "An error occurred while connecting to MySQL. Press any key to exit.";

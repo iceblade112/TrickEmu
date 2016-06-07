@@ -66,7 +66,7 @@ namespace TrickEmu
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Database error: " + ex);
+                Program.logger.Error(ex, "Database error: ");
             }
         }
     }

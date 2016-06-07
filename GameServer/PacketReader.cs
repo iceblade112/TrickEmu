@@ -70,10 +70,10 @@ namespace TrickEmu
                     PacketWriter.DrillUnk1(dec, sock);
                     break;
                 case PacketId.R_DRILL_UNK2:
-                    Console.WriteLine("Got drill unknown 2 packet.");
+                    Program.logger.Debug("Got drill unknown 2 packet.");
                     break;
                 default:
-                    Methods.echoColor(Language.strings["PacketHandler"], ConsoleColor.Green, Language.strings["UnhandledPacket"]);
+                    Program.logger.Debug(Language.strings["UnhandledPacket"]);
                     break;
             }
         }

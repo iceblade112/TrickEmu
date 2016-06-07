@@ -1,8 +1,5 @@
 SET FOREIGN_KEY_CHECKS=0;
 
--- ----------------------------
--- Table structure for characters
--- ----------------------------
 DROP TABLE IF EXISTS `characters`;
 CREATE TABLE `characters` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -12,18 +9,12 @@ CREATE TABLE `characters` (
   `money` int(10) unsigned DEFAULT '0',
   `health` int(11) DEFAULT '100',
   `mana` int(11) DEFAULT '100',
+  `map` int(11) DEFAULT '33',
+  `pos_x` int(11) DEFAULT '768',
+  `pos_y` int(11) DEFAULT '768',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=100015585 DEFAULT CHARSET=utf8;
 
--- ----------------------------
--- Records of characters
--- ----------------------------
-INSERT INTO `characters` VALUES ('1', 'gm001', 'Test', '0', '0', '100', '100');
-INSERT INTO `characters` VALUES ('2', 'gm001', 'Tast', '0', '0', '100', '100');
-
--- ----------------------------
--- Table structure for users
--- ----------------------------
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -32,7 +23,4 @@ CREATE TABLE `users` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
 
--- ----------------------------
--- Records of users
--- ----------------------------
 INSERT INTO `users` VALUES ('1', 'gm001', '111111');

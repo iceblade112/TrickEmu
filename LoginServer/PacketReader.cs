@@ -30,7 +30,7 @@ namespace TrickEmu
                     PacketWriter.SelectServer(dec, sock);
                     break;
                 default:
-                    Methods.echoColor(Language.strings["PacketHandler"], ConsoleColor.Green, Language.strings["UnhandledPacket"]);
+                    Program.logger.Warn(Language.strings["UnhandledPacket"]);
                     break;
             }
         }

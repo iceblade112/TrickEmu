@@ -23,7 +23,7 @@ namespace TrickEmu
             return Config.encoding.GetString(bytes);
         }
 
-        public static void echoColor(string from, ConsoleColor color, string write)
+        /*public static void echoColor(string from, ConsoleColor color, string write)
         {
             echoColor(from, color, write, new string[] { });
         }
@@ -38,7 +38,7 @@ namespace TrickEmu
                 write = write.Replace("{" + i + "}", args[i]);
             }
             Console.WriteLine(write);
-        }
+        }*/
 
         public static ushort ReadUshort(byte[] bytes, int pos)
         {

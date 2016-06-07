@@ -7,11 +7,14 @@ using System.Net;
 using System.Net.Sockets;
 using System.IO;
 using MySql.Data.MySqlClient;
+using NLog;
 
 namespace TrickEmu
 {
     class Program
     {
+        public static Logger logger = LogManager.GetCurrentClassLogger();
+
         private static Socket _serverSocket;
         private static readonly List<Socket> _clientSockets = new List<Socket>();
         private const int _BUFFER_SIZE = 2048;
@@ -33,7 +36,7 @@ namespace TrickEmu
 
             if (!File.Exists("TESettings.cfg"))
             {
-                Methods.echoColor(Language.strings["General"], ConsoleColor.DarkCyan, Language.strings["ConfigNotExist"]);
+                logger.Info(Language.strings["ConfigNotExist"]);
                 try
                 {
                     var inifile = File.Create("TESettings.cfg");
@@ -49,8 +52,7 @@ namespace TrickEmu
                 }
                 catch (Exception ex)
                 {
-                    Methods.echoColor(Language.strings["General"], ConsoleColor.DarkCyan, Language.strings["ConfigErrorUseDefault"]);
-                    Console.WriteLine(ex.ToString());
+                    logger.Error(ex, Language.strings["ConfigErrorUseDefault"]);
                 }
             }
             else
@@ -115,8 +117,7 @@ namespace TrickEmu
                 }
                 catch (Exception ex)
                 {
-                    Methods.echoColor(Language.strings["General"], ConsoleColor.DarkCyan, Language.strings["ConfigErrorUseDefault"]);
-                    Console.WriteLine(ex);
+                    logger.Error(ex, Language.strings["ConfigErrorUseDefault"]);
                 }
 
                 // Language
@@ -128,37 +129,36 @@ namespace TrickEmu
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine("Could not load language: " + ex);
+                        logger.Error(ex, "Could not load language: ");
                     }
-                }
-
-                // MySQL
-                _MySQLConn = new MySqlConnection("server=" + _MySQLHost + ";port=" + _MySQLPort + ";database=" + _MySQLDB + ";uid=" + _MySQLUser + ";pwd=" + _MySQLPass + ";");
-                try
-                {
-                    _MySQLConn.Open();
-                }
-                catch (Exception ex)
-                {
-                    Methods.echoColor(Language.strings["General"], ConsoleColor.DarkCyan, Language.strings["MySQLConnectError"]);
-                    Console.WriteLine(ex);
-                    Console.ReadKey();
-                    Environment.Exit(1); // Exit with error code 1 because error
                 }
             }
 
-            Methods.echoColor(Language.strings["SocketSys"], ConsoleColor.DarkGreen, Language.strings["StartingServer"]);
+            // MySQL
+            _MySQLConn = new MySqlConnection("server=" + _MySQLHost + ";port=" + _MySQLPort + ";database=" + _MySQLDB + ";uid=" + _MySQLUser + ";pwd=" + _MySQLPass + ";");
+            try
+            {
+                _MySQLConn.Open();
+            }
+            catch (Exception ex)
+            {
+                logger.Error(ex, Language.strings["MySQLConnectError"]);
+                Console.ReadKey();
+                Environment.Exit(1); // Exit with error code 1 because error
+            }
+
+            logger.Info(Language.strings["StartingServer"]);
             try
             {
                 _serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 _serverSocket.Bind(new IPEndPoint(IPAddress.Any, Config.loginPort));
                 _serverSocket.Listen(5);
                 _serverSocket.BeginAccept(AcceptCallback, null);
-                Methods.echoColor(Language.strings["SocketSys"], ConsoleColor.DarkGreen, Language.strings["StartedServer"], new string[] { Config.loginPort.ToString() });
+                logger.Info(Language.strings["StartedServer"], Config.channelPort.ToString());
             }
             catch (Exception ex)
             {
-                Console.WriteLine(Language.strings["ErrorStartServer"] + ex);
+                logger.Error(ex, Language.strings["ErrorStartServer"]);
             }
             while(true) Console.ReadLine();
         }
@@ -189,7 +189,7 @@ namespace TrickEmu
 
             _clientSockets.Add(socket);
             socket.BeginReceive(_buffer, 0, _BUFFER_SIZE, SocketFlags.None, ReceiveCallback, socket);
-            Methods.echoColor(Language.strings["SocketSys"], ConsoleColor.DarkGreen, Language.strings["ClientAccepted"], new string[] { socket.RemoteEndPoint.ToString() });
+            logger.Info(Language.strings["ClientAccepted"], socket.RemoteEndPoint.ToString());
             _serverSocket.BeginAccept(AcceptCallback, null);
         }
 
@@ -204,7 +204,7 @@ namespace TrickEmu
             }
             catch (SocketException)
             {
-                Methods.echoColor(Language.strings["SocketSys"], ConsoleColor.DarkGreen, Language.strings["ForcefulDisconnect"], new string[] { current.RemoteEndPoint.ToString() });
+                logger.Warn(Language.strings["ForcefulDisconnect"], current.RemoteEndPoint.ToString());
                 current.Close();
                 _clientSockets.Remove(current);
                 return;
@@ -215,7 +215,14 @@ namespace TrickEmu
 
             if (received != 0)
             {
-                PacketReader.handlePacket(recBuf, current);
+                try
+                {
+                    PacketReader.handlePacket(recBuf, current);
+                }
+                catch (Exception ex)
+                {
+                    logger.Warn(ex, Language.strings["MalformedPacketError"]);
+                }
             } else
             {
                 return;

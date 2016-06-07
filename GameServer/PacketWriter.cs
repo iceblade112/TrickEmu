@@ -38,7 +38,7 @@ namespace TrickEmu
                 }
                 cmd.Dispose();
             }
-            Methods.echoColor("Debug", ConsoleColor.DarkBlue, plr.Name + " is entering the world.");
+            Program.logger.Debug(plr.Name + " is entering the world.");
 
             Program._clientPlayers.Add(sock.GetHashCode(), plr);
 
@@ -145,7 +145,7 @@ namespace TrickEmu
 
             // Created a 2nd character??
 
-            Console.WriteLine("Entity ID " + Program._clientPlayers[sock.GetHashCode()].EntityID + " is entering");
+            Program.logger.Debug("Entity ID {0} is entering", Program._clientPlayers[sock.GetHashCode()].EntityID);
 
             List<byte> msg1 = new List<byte>();
 
@@ -171,7 +171,7 @@ namespace TrickEmu
                 // If the player selected isn't the current player
                 if (entry.Key != sock.GetHashCode())
                 {
-                    Console.WriteLine("Sending entity ID " + Program._clientPlayers[sock.GetHashCode()].EntityID + " to " + entry.Value.EntityID);
+                    Program.logger.Debug("Sending entity ID {0} to {1}", Program._clientPlayers[sock.GetHashCode()].EntityID, entry.Value.EntityID);
                     PacketBuffer msg2z = new PacketBuffer();
                     msg2z.WriteHeaderHexString("07 00 00 00 01");
                     //msg1.WriteHexString("95 1B");
@@ -200,7 +200,7 @@ namespace TrickEmu
                     // If the player selected isn't the current player
                     if (entry.Key != sock.GetHashCode())
                     {
-                        Console.WriteLine("Sending entity ID " + entry.Value.EntityID + " to " + Program._clientPlayers[sock.GetHashCode()].EntityID);
+                        Program.logger.Debug("Sending entity ID {0} to {1}", entry.Value.EntityID, Program._clientPlayers[sock.GetHashCode()].EntityID);
                         PacketBuffer msg3z = new PacketBuffer();
                         msg3z.WriteHeaderHexString("07 00 00 00 01");
                         msg3z.WriteUshort(Program._clientPlayers[sock.GetHashCode()].EntityID);
@@ -263,7 +263,7 @@ namespace TrickEmu
             data.WriteString(Methods.sep(Methods.getString(dec, 9), "\x00"));
             data.WriteByte(0x00);
 
-            Console.WriteLine("Head notice text: " + Methods.sep(Methods.getString(dec, 9), "\x00"));
+            Program.logger.Debug("Head notice text: {0}", Methods.sep(Methods.getString(dec, 9), "\x00"));
 
             sock.Send(data.getPacket());
         }
@@ -320,7 +320,7 @@ namespace TrickEmu
 
                 byte[] newpkt = data.getPacket();
 
-                Console.WriteLine("Sending to " + Program._clientSockets.ToArray().Length + " client(s).");
+                Program.logger.Debug("Sending to {0} client(s).", Program._clientSockets.ToArray().Length);
 
                 foreach (Socket sockt in Program._clientSockets)
                 {
@@ -366,7 +366,7 @@ namespace TrickEmu
                 sock.Send(newpkt);
             }
 
-            Methods.echoColor(Language.strings["PacketHandler"], ConsoleColor.Green, "Received chat packet from entity " + Program._clientPlayers[sock.GetHashCode()].EntityID + ": " + chatString);
+            Program.logger.Debug("Received chat packet from entity {0}: {1}", Program._clientPlayers[sock.GetHashCode()].EntityID, chatString);
         }
 
         public static void MovePos(byte[] dec, Socket sock)
@@ -391,7 +391,7 @@ namespace TrickEmu
             Program._clientPlayers[sock.GetHashCode()].PosX = BitConverter.ToUInt16(new byte[] { dec[4], dec[5] }, 0);
             Program._clientPlayers[sock.GetHashCode()].PosY = BitConverter.ToUInt16(new byte[] { dec[6], dec[7] }, 0);
 
-            Console.WriteLine("Entity ID " + Program._clientPlayers[sock.GetHashCode()].EntityID + " moved: " + Program._clientPlayers[sock.GetHashCode()].PosX + " / " + Program._clientPlayers[sock.GetHashCode()].PosY);
+            Program.logger.Debug("Entity ID {0} moved: {1} / {2}", Program._clientPlayers[sock.GetHashCode()].EntityID, Program._clientPlayers[sock.GetHashCode()].PosX, Program._clientPlayers[sock.GetHashCode()].PosY);
         }
 
         public static void Sit(byte[] dec, Socket sock)
@@ -409,7 +409,7 @@ namespace TrickEmu
             data.WriteByte(dec[0]);
             sock.Send(data.getPacket());
 
-            Methods.echoColor(Language.strings["PacketHandler"], ConsoleColor.Green, "Sit packet sent.");
+            Program.logger.Debug("Sit packet sent.");
         }
 
         public static void SitDirection(byte[] dec, Socket sock)
@@ -434,10 +434,10 @@ namespace TrickEmu
 
             foreach (KeyValuePair<int, Player> entry in Program._clientPlayers)
             {
-                Console.WriteLine("Got " + entry.Value.ID + "; expecting " + uid + ".");
+                Program.logger.Debug("Got {0}; expecting {1}.", entry.Value.ID, uid);
                 if(entry.Value.ID == uid)
                 {
-                    Console.WriteLine("Found " + uid + ".");
+                    Program.logger.Debug("Found {0}.", uid);
                     orig_hash = entry.Value.ClientSocket.GetHashCode();
                     Program._clientPlayers.Remove(orig_hash);
                     entry.Value.ClientSocket = sock;
@@ -458,7 +458,7 @@ namespace TrickEmu
             Program._clientPlayers[sock.GetHashCode()].ClientRemoved = false;
 			Program._clientPlayers[sock.GetHashCode()].ChangingMap = false;
 
-            Methods.echoColor(Language.strings["PacketHandler"], ConsoleColor.Green, "Change zone packet sent.");
+            Program.logger.Debug("Change zone packet sent.");
 
             PacketBuffer msg1 = new PacketBuffer();
             msg1.WriteHeaderHexString("B2 01 00 00 01");
@@ -469,9 +469,6 @@ namespace TrickEmu
         public static void DrillBegin(byte[] dec, Socket sock)
         {
             StringBuilder hex = new StringBuilder(dec.Length * 2);
-            foreach (byte b in dec)
-                hex.AppendFormat("{0:x2}", b);
-            Console.WriteLine(hex.ToString());
 
             List<byte> packet1 = new List<byte>();
 
@@ -487,7 +484,7 @@ namespace TrickEmu
             Program._clientPlayers[sock.GetHashCode()].PosX = BitConverter.ToUInt16(new byte[] { dec[0], dec[1] }, 0);
             Program._clientPlayers[sock.GetHashCode()].PosY = BitConverter.ToUInt16(new byte[] { dec[2], dec[3] }, 0);
 
-            Console.WriteLine("(Drill) Entity ID " + Program._clientPlayers[sock.GetHashCode()].EntityID + " moved: " + Program._clientPlayers[sock.GetHashCode()].PosX + " / " + Program._clientPlayers[sock.GetHashCode()].PosY);
+            Program.logger.Debug("(Drill) Entity ID {0} moved: {1} ", Program._clientPlayers[sock.GetHashCode()].EntityID, Program._clientPlayers[sock.GetHashCode()].PosX + " / " + Program._clientPlayers[sock.GetHashCode()].PosY);
 
             /*PacketBuffer msg1_2 = new PacketBuffer();
             msg1_2.WriteHeaderHexString("18 00 00 00 01");

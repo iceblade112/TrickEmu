@@ -30,23 +30,6 @@ namespace TrickEmu.Commands
             string[] param = chat.Trim().Split(' ');
             string command = param[0];
 
-            /*
-            if(chat.ToLower().Equals("!help"))
-            {
-                
-            } else if(command.Equals("!move"))
-            {
-
-                /*PacketBuffer msg2 = new PacketBuffer();
-                msg2.WriteHeaderHexString("9A 00 00 00 01");
-                msg2.WriteHeaderHexString("DC 72 07 00 E0 1D F6 05 00 00 00 00 31 39 32 2E 31 36 38 2E 31 2E 32 36 00 F6 55 00 00 29 00 00 00 21 00 14 02 DE 02 02");
-                sock.Send(msg2.getPacket());*/
-
-                //Methods.echoColor("Command Handler", ConsoleColor.DarkMagenta, "Player executed movetest command.");
-                //return true;
-
-            //}*/
-
             switch (command.Substring(1))
             {
                 case "help":
@@ -72,9 +55,8 @@ namespace TrickEmu.Commands
                         sock.Send(data.getPacket());
                     }
 
-                    Methods.echoColor("Command Handler", ConsoleColor.DarkMagenta, "Player executed help command.");
+                    Program.logger.Debug("Player executed help command.");
                     return true;
-                    break;
                 case "move":
                     Program._clientPlayers[sock.GetHashCode()].ChangingMap = true;
 
@@ -136,7 +118,7 @@ namespace TrickEmu.Commands
 
                     if (param.Length > 2)
                     {
-                        Console.WriteLine("Length of param: " + param.Length);
+                        Program.logger.Debug("Length of param: {0}", param.Length);
                         try
                         {
                             pkt2.WriteUshort((ushort)int.Parse(param[2]));
@@ -160,7 +142,7 @@ namespace TrickEmu.Commands
 
                     if (param.Length > 3)
                     {
-                        Console.WriteLine("Length of param: " + param.Length);
+                        Program.logger.Debug("Length of param: {0}", param.Length);
                         try
                         {
                             pkt2.WriteUshort((ushort)int.Parse(param[3]));
@@ -185,7 +167,6 @@ namespace TrickEmu.Commands
                     pkt2.WriteHexString("02");
                     sock.Send(pkt2.getPacket());
                     return true;
-                    break;
             }
 
             return false;

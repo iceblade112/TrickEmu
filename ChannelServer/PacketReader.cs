@@ -37,7 +37,7 @@ namespace TrickEmu
                 case PacketId.R_ALIVEPING:
                     break;
                 default:
-                    Methods.echoColor(Language.strings["PacketHandler"], ConsoleColor.Green, Language.strings["UnhandledPacket"]);
+                    Program.logger.Warn(Language.strings["UnhandledPacket"]);
                     break;
             }
         }

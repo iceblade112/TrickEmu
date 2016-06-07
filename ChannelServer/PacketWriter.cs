@@ -13,7 +13,7 @@ namespace TrickEmu
         {
             if(!Program._clientSocketIdentifiers.ContainsKey(sock.GetHashCode()))
             {
-                Console.WriteLine(sock.GetHashCode() + " does not exist in the identifier dictionary!");
+                Program.logger.Warn("{0} does not exist in the identifier dictionary!", sock.GetHashCode());
                 return;
             }
 
@@ -29,7 +29,7 @@ namespace TrickEmu
                     nochars = Convert.ToInt32(cmd.ExecuteScalar());
                     if (nochars >= 3)
                     {
-                        Console.WriteLine("This guy already has 3+ characters!");
+                        Program.logger.Debug("This guy already has 3+ characters!");
                         cmd.Dispose();
                         return;
                     }
@@ -37,13 +37,10 @@ namespace TrickEmu
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Database error: " + ex);
+                Program.logger.Error(ex, "Database error: ");
                 return;
             }
 
-            //byte[] noheader = new byte[] { };
-            //dec.CopyTo(noheader, 16);
-            //Console.WriteLine(BitConverter.ToString(dec).Replace("-", " "));
             byte[][] data = Methods.Split(0x00, dec).ToArray();
 
             string newchar = Config.encoding.GetString(data[0]);
@@ -61,7 +58,7 @@ namespace TrickEmu
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Database error: " + ex);
+                Program.logger.Error(ex, "Database error: ");
                 return;
             }
 
@@ -93,10 +90,10 @@ namespace TrickEmu
                 Program._clientSocketIdentifiers.Remove(sock.GetHashCode());
             }
             Program._clientSocketIdentifiers.Add(sock.GetHashCode(), uid);
-            
-            Console.WriteLine("User ID: " + uid);
-            Console.WriteLine("User PW: " + Config.encoding.GetString(udetail[1]));
-            Console.WriteLine("Client Version: " + Config.encoding.GetString(udetail[2]));
+
+            Program.logger.Debug("User ID: {0}", uid);
+            Program.logger.Debug("User PW: {0}", Config.encoding.GetString(udetail[1]));
+            Program.logger.Debug("Client Version: {0}", Config.encoding.GetString(udetail[2]));
 
             PacketBuffer data = new PacketBuffer();
             data.WriteHeaderHexString("D2 07 00 00 01");
@@ -115,7 +112,7 @@ namespace TrickEmu
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Database error: " + ex);
+                Program.logger.Error(ex, "Database error: ");
                 return;
             }
 
@@ -159,7 +156,7 @@ namespace TrickEmu
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Database error: " + ex);
+                Program.logger.Error(ex, "Database error: ");
                 return;
             }
 
