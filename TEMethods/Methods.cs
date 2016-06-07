@@ -23,23 +23,6 @@ namespace TrickEmu
             return Config.encoding.GetString(bytes);
         }
 
-        /*public static void echoColor(string from, ConsoleColor color, string write)
-        {
-            echoColor(from, color, write, new string[] { });
-        }
-
-        public static void echoColor(string from, ConsoleColor color, string write, string[] args)
-        {
-            Console.ForegroundColor = color;
-            Console.Write("[" + DateTime.Now.ToShortDateString() + " " + DateTime.Now.ToShortTimeString() + " | " + from + "] ");
-            Console.ForegroundColor = ConsoleColor.White;
-            for (int i = 0; i != args.Length; i++)
-            {
-                write = write.Replace("{" + i + "}", args[i]);
-            }
-            Console.WriteLine(write);
-        }*/
-
         public static ushort ReadUshort(byte[] bytes, int pos)
         {
             byte[] ba = new byte[2] { bytes[pos], bytes[pos + 1] };
