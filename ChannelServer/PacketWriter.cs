@@ -44,6 +44,8 @@ namespace TrickEmu
             byte[][] data = Methods.Split(0x00, dec).ToArray();
 
             string newchar = Config.encoding.GetString(data[0]);
+            // Investigate: won't work with a non-bunny character (sheep)
+            // \/
             byte[] charpoints = data[3];
 
             try

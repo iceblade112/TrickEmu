@@ -206,7 +206,18 @@ namespace TrickEmu
 
 			new Timer(DisconnectTimer, null, 0, 1000);
 
-            while (true) Console.ReadLine();
+            while (true)
+            {
+                string res = Console.ReadLine();
+                if(res == "!plrs")
+                {
+                    logger.Info("Currently online players:");
+                    foreach (KeyValuePair<int, Player> entry in Program._clientPlayers)
+                    {
+                        logger.Info("ID " + entry.Value.EntityID + ": " + "[Name: " + entry.Value.Name + "] [ChangingMap: " + entry.Value.ChangingMap + "] [ClientRemoved: " + entry.Value.ClientRemoved + "]");
+                    }
+                }
+            }
         }
 
 		private static void DisconnectTimer(Object o) {
@@ -218,7 +229,11 @@ namespace TrickEmu
 				try {
 					if(entry.Value.ClientSocket.Connected) {
 						disposed = false;
-					}
+					} else
+                    {
+                        // Fix char dupe bug
+                        disposed = true;
+                    }
 					if(entry.Value.ClientRemoved && !entry.Value.ChangingMap) {
 						disposed = true;
 					}

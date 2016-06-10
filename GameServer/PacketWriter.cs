@@ -258,7 +258,7 @@ namespace TrickEmu
             foreach (Socket sockt in Program._clientSockets)
             {
                 // If not on the same map, don't broadcast
-                if (Program._clientPlayers[sockt.GetHashCode()].Map != Program._clientPlayers[sock.GetHashCode()].Map) continue;
+                if (!Program._clientPlayers.ContainsKey(sockt.GetHashCode()) || Program._clientPlayers[sockt.GetHashCode()].Map != Program._clientPlayers[sock.GetHashCode()].Map) continue;
 
                 try
                 {
@@ -294,6 +294,8 @@ namespace TrickEmu
 
                 foreach (Socket sockt in Program._clientSockets)
                 {
+                    if (!Program._clientPlayers.ContainsKey(sockt.GetHashCode())) continue;
+
                     try
                     {
                         if (sockt != sock)
@@ -324,6 +326,8 @@ namespace TrickEmu
 
                 foreach (Socket sockt in Program._clientSockets)
                 {
+                    if (!Program._clientPlayers.ContainsKey(sockt.GetHashCode())) continue;
+
                     try
                     {
                         if (sockt != sock)
@@ -356,7 +360,7 @@ namespace TrickEmu
                     try
                     {
                         // If not on the same map, don't broadcast
-                        if (Program._clientPlayers[sockt.GetHashCode()].Map != Program._clientPlayers[sock.GetHashCode()].Map) continue;
+                        if (!Program._clientPlayers.ContainsKey(sockt.GetHashCode()) || Program._clientPlayers[sockt.GetHashCode()].Map != Program._clientPlayers[sock.GetHashCode()].Map) continue;
 
                         if (sockt != sock)
                         {
@@ -383,7 +387,7 @@ namespace TrickEmu
             foreach (Socket sockt in Program._clientSockets)
             {
                 // If not on the same map, don't broadcast
-                if (Program._clientPlayers[sockt.GetHashCode()].Map != Program._clientPlayers[sock.GetHashCode()].Map) continue;
+                if (!Program._clientPlayers.ContainsKey(sockt.GetHashCode()) || Program._clientPlayers[sockt.GetHashCode()].Map != Program._clientPlayers[sock.GetHashCode()].Map) continue;
 
                 try
                 {
@@ -418,7 +422,7 @@ namespace TrickEmu
             foreach (Socket sockt in Program._clientSockets)
             {
                 // If not on the same map, don't broadcast
-                if (Program._clientPlayers[sockt.GetHashCode()].Map != Program._clientPlayers[sock.GetHashCode()].Map) continue;
+                if (!Program._clientPlayers.ContainsKey(sockt.GetHashCode()) || Program._clientPlayers[sockt.GetHashCode()].Map != Program._clientPlayers[sock.GetHashCode()].Map) continue;
 
                 try
                 {
@@ -446,7 +450,7 @@ namespace TrickEmu
             foreach (Socket sockt in Program._clientSockets)
             {
                 // If not on the same map, don't broadcast
-                if (Program._clientPlayers[sockt.GetHashCode()].Map != Program._clientPlayers[sock.GetHashCode()].Map) continue;
+                if (Program._clientPlayers.ContainsKey(sockt.GetHashCode()) &&  Program._clientPlayers[sockt.GetHashCode()].Map != Program._clientPlayers[sock.GetHashCode()].Map) continue;
 
                 try
                 {
@@ -479,6 +483,7 @@ namespace TrickEmu
             if(orig_hash == -1)
             {
                 //sock.Disconnect(false);
+                Program.logger.Warn("Player ID not found.");
                 return;
             }
 
@@ -680,6 +685,33 @@ namespace TrickEmu
             packet.WriteHexString("E4 6B 07 72 45 6B 6B 6B A6 4C 9E CD 1C"); // ?
 
             sock.Send(packet.getPacket());
+        }
+
+        public static void ChatEmote(byte[] dec, Socket sock)
+        {
+            PacketBuffer data = new PacketBuffer();
+            data.WriteHeaderHexString("3E 00 00 00 01");
+            data.WriteUshort(Program._clientPlayers[sock.GetHashCode()].EntityID);
+            data.WriteByte(dec[0]);
+
+            byte[] newpkt = data.getPacket();
+
+            foreach (Socket sockt in Program._clientSockets)
+            {
+                try
+                {
+                    // If not on the same map, don't broadcast
+                    if (!Program._clientPlayers.ContainsKey(sockt.GetHashCode()) || Program._clientPlayers[sockt.GetHashCode()].Map != Program._clientPlayers[sock.GetHashCode()].Map) continue;
+
+                    if (sockt != sock)
+                    {
+                        sockt.Send(newpkt);
+                    }
+                }
+                catch { }
+            }
+
+            sock.Send(newpkt);
         }
     }
 }

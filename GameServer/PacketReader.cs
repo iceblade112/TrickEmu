@@ -19,6 +19,7 @@ namespace TrickEmu
             R_MOVEPOS = 0x1800,
             R_HEADNOTICE = 0xB600,
             R_CHANGEZONE = 0x9C00,
+            R_CHATEMOTE = 0x3E00,
 
             R_ITEM_EQUIP = 0x5100,
             R_DRILL_BEGIN = 0x2C00,
@@ -58,7 +59,9 @@ namespace TrickEmu
                 case PacketId.R_SITDIR:
                     PacketWriter.SitDirection(dec, sock);
                     break;
-
+                case PacketId.R_CHATEMOTE:
+                    PacketWriter.ChatEmote(dec, sock);
+                    break;
                 case PacketId.R_ITEM_EQUIP:
                     PacketWriter.ItemEquip(dec, sock);
                     break;

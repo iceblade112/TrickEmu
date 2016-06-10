@@ -26,7 +26,7 @@ namespace TrickEmu
             MapPos[50] = new Point { X = 1300, Y = 200 };
 
             MapName[1] = "Megalopolis Square";
-            MapName[2] = "Gate of Oops Wharf";
+            MapName[2] = "Gate of Caballa Relics";
             MapName[3] = "Gate of Desert Beach";
             MapName[3] = "Gate of Mermaid Palace (Unknown)";
             MapName[5] = "Oops Wharf";
