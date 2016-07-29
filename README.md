@@ -3,6 +3,8 @@
 
 TrickEmu is a WIP emulator for Trickster Online 0.50 coded in C# and licensed under AGPLv3. TrickEmu compiles with Mono. Any complaints about the license go to [@PyroSamurai](https://github.com/PyroSamurai). EXE patches are available at [iceblade112/TrickClientPatches](https://github.com/iceblade112/TrickClientPatches).
 
+[You can click here for AppVeyor artifacts.](https://ci.appveyor.com/project/iceblade112/trickemu/build/artifacts)
+
 ### Requirements
 * MySQL, MariaDB, or some other drop-in MySQL replacement
 * MySQL Connector for .NET
