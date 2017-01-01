@@ -280,9 +280,10 @@ $RECYCLE.BIN/
 # GNU+Linux xbuild Outputs
 # ========================
 /bin/*
-!/bin/Debug/languages
-!/bin/Release/languages
-/TEMethods/bin
+/ChannelServer/obj/*
+/GameServer/obj/*
+/LoginServer/obj/*
+/TE2Common/obj/*
 
 # Custom
 /extra

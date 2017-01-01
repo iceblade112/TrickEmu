@@ -1,202 +1,61 @@
-﻿using System;
+﻿using MySql.Data.MySqlClient;
+using NLog;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Net;
 using System.Net.Sockets;
-using System.IO;
-using MySql.Data.MySqlClient;
-using NLog;
+using System.Text;
+using System.Threading.Tasks;
+using TE2Common;
 
-namespace TrickEmu
+namespace TrickEmu2
 {
     class Program
     {
-        public static Logger logger = LogManager.GetCurrentClassLogger();
-
         private static Socket _serverSocket;
-        public static readonly List<Socket> _clientSockets = new List<Socket>();
-        public static Dictionary<int, string> _clientSocketIdentifiers = new Dictionary<int, string>();
+        private static readonly List<Socket> _clientSockets = new List<Socket>();
+        private static readonly byte[] _buffer = new byte[2048];
 
-        private const int _BUFFER_SIZE = 2048;
-        private static readonly byte[] _buffer = new byte[_BUFFER_SIZE];
-
-        public static string _GameIP = "127.0.0.1";
-        private static string _SLang = "en";
-        private static string _MySQLUser = "root";
-        private static string _MySQLPass = "root";
-        private static string _MySQLHost = "127.0.0.1";
-        private static string _MySQLPort = "3306";
-        private static string _MySQLDB = "trickemu";
         public static MySqlConnection _MySQLConn;
-        public static string[] _MOTD;
+        public static Logger logger = LogManager.GetCurrentClassLogger();
+        public static Dictionary<int, User> _clientSocketIdentifiers = new Dictionary<int, User>();
+        public static Configuration config = null;
 
         static void Main(string[] args)
         {
-            new Language(); // Initialize default language strings
+            Console.OutputEncoding = Encoding.Unicode; // UTF-16
             Console.Title = "TrickEmu Channel (0.50)";
 
-            if (!File.Exists("TESettings.cfg"))
-            {
-                logger.Info(Language.strings["ConfigNotExist"]);
-                try
-                {
-                    var inifile = File.Create("TESettings.cfg");
-                    inifile.Close();
-                    var ini = new ConfigReader("TESettings.cfg");
-                    ini.Write("Language", "en");
-                    ini.Write("User", "root");
-                    ini.Write("Pass", "root");
-                    ini.Write("Host", "127.0.0.1");
-                    ini.Write("Port", "3306");
-                    ini.Write("DB", "trickemu");
-                    ini.Write("GameIP", "127.0.0.1");
-                    ini.Save();
-                }
-                catch (Exception ex)
-                {
-                    logger.Error(ex, Language.strings["ConfigErrorUseDefault"]);
-                }
-            }
-            else
-            {
-                try {
-                    var inifile = new ConfigReader("TESettings.cfg");
-
-                    if (!inifile.KeyExists("Language"))
-                    {
-                        inifile.Write("Language", "en");
-                    }
-                    else
-                    {
-                        _SLang = inifile.Read("Language");
-                    }
-
-                    if (!inifile.KeyExists("User"))
-                    {
-                        inifile.Write("User", "root");
-                    } else
-                    {
-                        _MySQLUser = inifile.Read("User");
-                    }
-
-                    if (!inifile.KeyExists("Pass"))
-                    {
-                        inifile.Write("Pass", "root");
-                    }
-                    else
-                    {
-                        _MySQLPass = inifile.Read("Pass");
-                    }
-
-                    if (!inifile.KeyExists("Host"))
-                    {
-                        inifile.Write("Host", "127.0.0.1");
-                    }
-                    else
-                    {
-                        _MySQLHost = inifile.Read("Host");
-                    }
-                    
-                    if (!inifile.KeyExists("Port"))
-                    {
-                        inifile.Write("User", "3306");
-                    }
-                    else
-                    {
-                        _MySQLPort = inifile.Read("Port");
-                    }
-                    
-                    if (!inifile.KeyExists("DB"))
-                    {
-                        inifile.Write("DB", "trickemu");
-                    }
-                    else
-                    {
-                        _MySQLDB = inifile.Read("DB");
-                    }
-
-                    if (!inifile.KeyExists("GameIP"))
-                    {
-                        inifile.Write("GameIP", "127.0.0.1");
-                    }
-                    else
-                    {
-                        _GameIP = inifile.Read("GameIP");
-                    }
-
-                    inifile.Save();
-                }
-                catch (Exception ex)
-                {
-                    logger.Error(ex, Language.strings["ConfigErrorUseDefault"]);
-                }
-
-                // Language
-                if (_SLang != "en")
-                {
-                    try
-                    {
-                        Language.loadFromFile(_SLang);
-                    }
-                    catch (Exception ex)
-                    {
-                        logger.Error(ex, "Could not load language: ");
-                    }
-                }
-            }
-
-            _MOTD = new string[] { Language.strings["MOTDTEWelcome"] };
-
-            // MOTD
-            if (!File.Exists("MOTD.txt"))
-            {
-                try
-                {
-                    File.WriteAllText("MOTD.txt", "Welcome to TrickEmu!");
-                }
-                catch (Exception ex)
-                {
-                    logger.Error(ex, Language.strings["MOTDCreateError"]);
-                }
-            }
-            else
-            {
-                try
-                {
-                    _MOTD = File.ReadAllText("MOTD.txt").Split(new string[] { "\r\n", "\n" }, StringSplitOptions.None);
-                }
-                catch (Exception ex)
-                {
-                    logger.Error(ex, Language.strings["MOTDLoadError"]);
-                }
-            }
-
+            config = new Configuration();
+               
             // MySQL
-            _MySQLConn = new MySqlConnection("server=" + _MySQLHost + ";port=" + _MySQLPort + ";database=" + _MySQLDB + ";uid=" + _MySQLUser + ";pwd=" + _MySQLPass + ";");
+            _MySQLConn = new MySqlConnection("server=" + config.DB["Host"] + ";port=3306;database=" + config.DB["Database"] + ";uid=" + config.DB["Username"] + ";pwd=" + config.DB["Password"] + ";");
             try
             {
                 _MySQLConn.Open();
             }
             catch (Exception ex)
             {
-                logger.Error(ex, Language.strings["MySQLConnectError"]);
+                logger.Error(ex, "Unable to connect to MySQL.");
                 Console.ReadKey();
                 Environment.Exit(1); // Exit with error code 1 because error
             }
 
-            logger.Info(Language.strings["StartingServer"]);
-            try {
+            logger.Info("Starting server...");
+            try
+            {
                 _serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                _serverSocket.Bind(new IPEndPoint(IPAddress.Any, Config.channelPort));
+                _serverSocket.Bind(new IPEndPoint(IPAddress.Any, int.Parse(config.Server["ChannelPort"])));
                 _serverSocket.Listen(5);
                 _serverSocket.BeginAccept(AcceptCallback, null);
-                logger.Info(Language.strings["StartedServer"], Config.channelPort.ToString());
+                logger.Info("Server has been started on port {0}.", config.Server["ChannelPort"]);
             }
             catch (Exception ex)
             {
-                logger.Error(ex, Language.strings["ErrorStartServer"]);
+                logger.Error(ex, "Unable to start the server.");
+                Console.ReadKey();
+                Environment.Exit(1); // Exit with error code 1 because error
             }
             while (true) Console.ReadLine();
         }
@@ -226,23 +85,23 @@ namespace TrickEmu
             }
 
             _clientSockets.Add(socket);
-            socket.BeginReceive(_buffer, 0, _BUFFER_SIZE, SocketFlags.None, ReceiveCallback, socket);
-            logger.Info(Language.strings["ClientAccepted"], socket.RemoteEndPoint.ToString());
+            socket.BeginReceive(_buffer, 0, 2048, SocketFlags.None, ReceiveCallback, socket);
+            logger.Info("A client has been accepted from port {0}.", socket.RemoteEndPoint.ToString());
             _serverSocket.BeginAccept(AcceptCallback, null);
         }
 
         private static void ReceiveCallback(IAsyncResult AR)
         {
             Socket current = (Socket)AR.AsyncState;
-            int received;
 
+            int received;
             try
             {
                 received = current.EndReceive(AR);
             }
             catch (SocketException)
             {
-                logger.Warn(Language.strings["ForcefulDisconnect"], current.RemoteEndPoint.ToString());
+                logger.Warn("Client {0} forcefully disconnected.", current.RemoteEndPoint.ToString());
                 current.Close();
                 _clientSockets.Remove(current);
                 return;
@@ -255,11 +114,11 @@ namespace TrickEmu
             {
                 try
                 {
-                    PacketReader.handlePacket(recBuf, current);
+                    Packets._PacketReader.HandlePacket(current, recBuf);
                 }
                 catch (Exception ex)
                 {
-                    logger.Warn(ex, Language.strings["MalformedPacketError"]);
+                    logger.Error(ex, "Unable to handle packet. Perhaps a malformed packet was sent?");
                 }
             }
             else
@@ -267,7 +126,7 @@ namespace TrickEmu
                 return;
             }
 
-            current.BeginReceive(_buffer, 0, _BUFFER_SIZE, SocketFlags.None, ReceiveCallback, current);
+            current.BeginReceive(_buffer, 0, 2048, SocketFlags.None, ReceiveCallback, current);
             return;
         }
     }

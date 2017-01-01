@@ -4,12 +4,12 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{9735C9D1-7DF7-4FAA-B251-FA51AA025770}</ProjectGuid>
+    <ProjectGuid>{658228C6-6E78-4A38-B7AA-37559D3C219A}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TrickEmu</RootNamespace>
+    <RootNamespace>TrickEmu2</RootNamespace>
     <AssemblyName>ChannelServer</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
@@ -33,11 +33,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MySql.Data">
-      <HintPath>..\lib\MySql.Data.dll</HintPath>
+    <Reference Include="MySql.Data, Version=6.9.9.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+      <HintPath>..\packages\MySql.Data.6.9.9\lib\net45\MySql.Data.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
-      <HintPath>..\packages\NLog.4.3.4\lib\net45\NLog.dll</HintPath>
+      <HintPath>..\packages\NLog.4.4.1\lib\net45\NLog.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="System" />
@@ -50,8 +51,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PacketReader.cs" />
-    <Compile Include="PacketWriter.cs" />
+    <Compile Include="Packets\CharacterList.cs" />
+    <Compile Include="Packets\CreateCharacter.cs" />
+    <Compile Include="Packets\DeleteCharacter.cs" />
+    <Compile Include="Packets\SelectCharacter.cs" />
+    <Compile Include="Packets\_PacketReader.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -66,9 +70,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TEMethods\TEMethods.csproj">
-      <Project>{417998b4-0733-4115-8c8f-070982fc0cfe}</Project>
-      <Name>TEMethods</Name>
+    <ProjectReference Include="..\TE2Common\TE2Common.csproj">
+      <Project>{3be10009-a4dc-4204-92e5-ac28634e4aee}</Project>
+      <Name>TE2Common</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
