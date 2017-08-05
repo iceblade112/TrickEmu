@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Net.Sockets;
 using TE2Common;
 
-namespace TrickEmu2
+namespace TrickEmu
 {
     class GameFunctions
     {

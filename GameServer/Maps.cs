@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TrickEmu2
+namespace TrickEmu
 {
     class Maps
     {

@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TE2Common;
 
-namespace TrickEmu2.Packets
+namespace TrickEmu.Packets
 {
     class CharacterMove
     {
