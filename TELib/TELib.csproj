@@ -7,8 +7,8 @@
     <ProjectGuid>{3BE10009-A4DC-4204-92E5-AC28634E4AEE}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TE2Common</RootNamespace>
-    <AssemblyName>TE2Common</AssemblyName>
+    <RootNamespace>TELib</RootNamespace>
+    <AssemblyName>TELib</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>

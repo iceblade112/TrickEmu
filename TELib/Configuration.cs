@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TE2Common
+namespace TELib
 {
     public class Configuration
     {

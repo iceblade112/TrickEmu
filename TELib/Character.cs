@@ -5,7 +5,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace TE2Common
+namespace TELib
 {
     public class Character
     {

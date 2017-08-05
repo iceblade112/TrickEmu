@@ -8,7 +8,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using TE2Common;
+using TELib;
 
 namespace TrickEmu
 {

@@ -7,7 +7,7 @@
     <ProjectGuid>{658228C6-6E78-4A38-B7AA-37559D3C219A}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>TrickEmu2</RootNamespace>
+    <RootNamespace>TrickEmu</RootNamespace>
     <AssemblyName>ChannelServer</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -70,9 +70,9 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\TE2Common\TE2Common.csproj">
+    <ProjectReference Include="..\TELib\TELib.csproj">
       <Project>{3be10009-a4dc-4204-92e5-ac28634e4aee}</Project>
-      <Name>TE2Common</Name>
+      <Name>TELib</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

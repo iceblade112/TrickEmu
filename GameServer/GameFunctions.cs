@@ -2,7 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Net.Sockets;
-using TE2Common;
+using TELib;
 
 namespace TrickEmu
 {

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
-using TE2Common;
+using TELib;
 
 namespace TrickEmu.Packets
 {
