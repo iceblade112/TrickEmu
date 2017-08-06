@@ -1,6 +1,6 @@
 language: csharp
-solution: TrickEmu2.sln
+solution: TrickEmu.sln
 install:
-  - nuget restore TrickEmu2.sln
+  - nuget restore TrickEmu.sln
 script:
   - xbuild /p:Configuration=Release /p:TargetFrameworkVersion=v4.5 TrickEmu2.sln
