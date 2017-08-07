@@ -1,3 +1,7 @@
+notifications:
+  email:
+    - iceblade112@users.noreply.github.com
+    - PyroSamurai@users.noreply.github.com
 language: csharp
 solution: TrickEmu.sln
 install:
